@@ -27,6 +27,8 @@ import { register } from "../userSlice";
 import { makeStyles } from "@mui/styles";
 import { useState } from "react";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { checkJWT } from "../../../constants";
 
 function Copyright(props) {
   return (
@@ -65,7 +67,11 @@ const useStyles = makeStyles(() => ({
 function Register(props) {
   const classes = useStyles();
   const [confirm, setConfirm] = useState(false);
-
+  const navigate=useNavigate()
+  const handleAgree=()=>{
+    setConfirm(false);
+    navigate('/login')
+  }
   const handleClose = () => {
     setConfirm(false);
   };
@@ -172,8 +178,8 @@ function Register(props) {
             </DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleClose} autoFocus>
-             <Link to="/login">Agree</Link> 
+            <Button onClick={handleAgree} >
+              Agree
             </Button>
           </DialogActions>
         </Dialog>
