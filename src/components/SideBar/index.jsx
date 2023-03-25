@@ -147,7 +147,6 @@ function SideBar({ handleOpenDrawer, drawerNew }) {
                     }}
                 >
                     <MenuItem onClick={handleText}>
-                        {" "}
                         <ListItemIcon>
                             <TextSnippetOutlined fontSize='small' />
                         </ListItemIcon>

@@ -38,16 +38,58 @@
 .nav .css-16ac5r2-MuiButtonBase-root-MuiListItemButton-root.Mui-selected:hover {
   background-color: rgb(77 107 137 / 20%);
 }
-.stand-select .css-m5hdmq-MuiInputBase-root-MuiInput-root-MuiSelect-root:before{
-  border-bottom: none;
-}
-.stand-select .css-m5hdmq-MuiInputBase-root-MuiInput-root-MuiSelect-root:before:hover{
-  border-bottom: none;
-}
-.stand-select .css-m5hdmq-MuiInputBase-root-MuiInput-root-MuiSelect-root:hover:not(.Mui-disabled, .Mui-error):before{
-  border-bottom: none;
+.stand-select .MuiInputBase-root:before{
+  border-bottom: none !important;
 
 }
+.stand-select .MuiInputBase-root:after{
+  border-bottom: none !important;
+
+}
+
 .btn-new .css-sghohy-MuiButtonBase-root-MuiButton-root.Mui-disabled{
   color:white
+}
+.note-content .MuiInputBase-root:before{
+  border-bottom: none !important;
+}
+.note-content .MuiInputBase-root:after{
+  border-bottom: none !important;
+}
+.note-title .MuiInputBase-root{
+  padding:5px !important;
+  font-weight: bold;
+  font-size: 18px;
+}
+.note-title .MuiInputBase-root:after{
+  border-bottom: none !important;
+
+}
+.note-title .MuiInputBase-root:hover:before{
+  border-bottom: 1px solid rgba(0, 0, 0, 0.42) !important;
+}
+.note-content .MuiInputBase-root{
+  padding: 5px!important;
+  font-size: 14px;
+
+}
+.box-tool 	.MuiListItem-padding{
+  padding:4px !important
+}
+.note-list .MuiListItem-padding{
+  padding: 3px 5px 3px 0px !important;
+}
+
+.note-list .css-518kzi-MuiListItemSecondaryAction-root{
+  right:5px !important;
+}
+.note-title .note-create{
+  position: absolute;
+  top:50%;
+  right:0;
+  transform: translateY(-50%);
+}
+.note-title{
+  position: relative;
+  padding: 4px 70px 2px 2px !important;
 }

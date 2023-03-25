@@ -1,5 +1,5 @@
 import { KeyboardArrowRight } from "@mui/icons-material";
-import { Box, Drawer, IconButton, TextField } from "@mui/material";
+import { Box, Button, Drawer, IconButton, TextField } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import React, { useEffect, useState } from "react";
 import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
@@ -11,6 +11,8 @@ import Settings from "../../features/Setting";
 import Footer from "../Footer";
 import SideBar from "../SideBar";
 import TextFieldBox from "../FieldNote/TextFieldBox";
+import ToolsNote from "../ToolsNote";
+import CheckListBox from "../FieldNote/CheckListFieldBox";
 
 Home.propTypes = {};
 
@@ -67,15 +69,17 @@ function Home(props) {
                     )}
                     <Drawer
                         variant='persistent'
+                        className="box-container"
                         anchor='right'
                         open={drawerNew}
                         sx={{
                             width: "400px",
+                           
                             flexShrink: 0,
-                            [`& .MuiDrawer-paper`]: { width: "400px", boxSizing: "border-box" },
+                            [`& .MuiDrawer-paper`]: { width: "400px", boxSizing: "border-box", height:"calc(100% - 65px)"},
                         }}
                     >
-                        <Box sx={{ overflow: "auto", padding: "10px 20px" }}>
+                        <Box sx={{height:"100%", padding: "10px 20px 0px 20px" }}>
                             <Box
                                 sx={{
                                     display: "flex",
@@ -92,6 +96,7 @@ function Home(props) {
                                 >
                                     <KeyboardArrowRight fontSize='large' />
                                 </IconButton>
+                                
                                 <img
                                     style={{
                                         width: "70px",
@@ -110,9 +115,16 @@ function Home(props) {
                                     New
                                 </span>
                             </Box>
-                            <Box>
-                                <TextFieldBox bg="#00d4f6"/>
+                        
+
+                            <Box className='box-container' sx={{height:"calc((100% - 100px)/2)",overflow:'hidden auto',padding:"10px"}}>
+                                {type==='text' &&<TextFieldBox bg="#00d4f6"/>}
+                                {type==='checklist' &&<CheckListBox  bg="#00d4f6" />}
                             </Box>
+                            <Box style={{ height: "calc((100% - 50px)/2)",marginTop:"5px" }}>
+                                <ToolsNote />
+                            </Box>
+                            
                         </Box>
                     </Drawer>
                     <Routes>

@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
+import { Grid } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import NoteItem from "./components/NoteItem";
-import { Container, Grid } from "@mui/material";
-import SearchInput from "../../components/SearchInput";
 import classNames from "classnames";
+import React, { useEffect, useState } from "react";
 import noteApi from "../../api/noteApi";
+import SearchInput from "../../components/SearchInput";
+import NoteItem from "./components/NoteItem";
 
 Archived.propTypes = {};
 
@@ -51,6 +50,9 @@ function Archived(props) {
     })()
     
   },[])
+  const handleChange=()=>{
+
+  }
   return (
     <div className={classes.root}>
       <div className={classes.headerFeature}>
@@ -64,7 +66,7 @@ function Archived(props) {
       >
         <Grid className={classes.grid} container spacing={3}>
           {data.map((item) => (
-            <Grid key={item.id} item xs={24} sm={12} md={4} lg={3}>
+            <Grid key={item.idNote} item xs={24} sm={12} md={4} lg={3}>
               <NoteItem dataItem={item} />
             </Grid>
           ))}
