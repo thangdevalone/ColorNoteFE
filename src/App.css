@@ -93,3 +93,9 @@
   position: relative;
   padding: 4px 70px 2px 2px !important;
 }
+.pg-load{
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+}

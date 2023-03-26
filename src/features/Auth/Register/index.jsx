@@ -57,12 +57,7 @@ const useStyles = makeStyles(() => ({
     width: "100vw",
     height: "100vh",
   },
-  progress: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    width: "100%",
-  },
+  
 }));
 function Register(props) {
   const classes = useStyles();
@@ -159,7 +154,7 @@ function Register(props) {
   const { isSubmitting } = form.formState;
   return (
     <div className={classes.root}>
-      {isSubmitting && <LinearProgress className={classes.progress} />}
+      {isSubmitting && <LinearProgress className='pg-load' />}
       {confirm && (
         <Dialog
           open={confirm}

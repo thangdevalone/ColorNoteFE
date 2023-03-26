@@ -4,18 +4,21 @@ import { Box } from '@mui/material';
 
 ColorBox.propTypes = {
     color:PropTypes.string.isRequired,
-    sx:PropTypes.object
+    sx:PropTypes.object,
+    handleClick:PropTypes.func
 };
 ColorBox.defaultProps={
     sx:{
         width:"50px",
         height:"50px",
-    }
+    },
+    handleClick:null
 }
 
-function ColorBox({color,sx}) {
+
+function ColorBox({color,sx,handleClick}) {
     return (
-        <Box sx={{...sx,backgroundColor:`${color}`}}>
+        <Box onClick={()=>{if(handleClick) handleClick(color)}} sx={{...sx,backgroundColor:`${color}`}}>
             
         </Box>
     );

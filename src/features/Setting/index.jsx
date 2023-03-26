@@ -1,18 +1,20 @@
-import React, { useState } from "react";
-import PropTypes from "prop-types";
 import {
     Box,
+    Button,
     Divider,
     FormControl,
     Grid,
-    InputLabel,
     MenuItem,
-    Select,
-    Typography,
+    Select
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import BoxDoubleContent from "../../components/BoxDoubleContent";
+import ColorBox from "../../components/ColorBox";
+import { colorBucket } from "../../constants";
+import { CheckCircleOutline, LoginOutlined } from "@mui/icons-material";
+import CheckIcon from "../../components/CustomIcons/CheckIcon";
 
 Settings.propTypes = {};
 const useStyle = makeStyles(() => ({
@@ -31,51 +33,97 @@ const useStyle = makeStyles(() => ({
     },
     mainText: {
         color: "#6A53CC",
-        fontSize: "20px",
+        fontSize: "22px",
         fontWeight: "700",
         marginBottom: "20px",
         display: "inline-block",
     },
 }));
-
+const configColorBox = {
+    width: "30px",
+    height: "30px",
+    borderRadius: "50%",
+    margin:"0 auto",
+    border:"1px solid black"
+};
 function Settings(props) {
     const classes = useStyle();
     const user =
         useSelector((state) => state.user.current) || JSON.parse(localStorage.getItem("user"));
-    const [screen,setScreen]=useState('archived')
-    const [theme,setTheme]=useState('light')
+    const [screen, setScreen] = useState("archived");
+    const [color, setColor] = useState(colorBucket.color_1);
+    const [fontSize, setFontSize] = useState('default');
+
     const CustomMenuScreen = () => (
-        <FormControl className="stand-select" variant='standard' sx={{ m: 1, minWidth: 80 }}>
+        <FormControl className='stand-select' variant='standard' sx={{ m: 1, minWidth: 80 }}>
             <Select id='screen-select' value={screen} onChange={handleChangeScreen} autoWidth>
-                <MenuItem value={'calendar'}>Calendar</MenuItem>
-                <MenuItem value={'archived'}>Archived</MenuItem>
-                <MenuItem value={'deleted'}>Deleted</MenuItem>
-                <MenuItem value={'settings'}>Settings</MenuItem>
+                <MenuItem value={"calendar"}>Calendar</MenuItem>
+                <MenuItem value={"archived"}>Archived</MenuItem>
+                <MenuItem value={"deleted"}>Deleted</MenuItem>
+                <MenuItem value={"settings"}>Settings</MenuItem>
             </Select>
         </FormControl>
     );
-    const CustomMenuTheme = () => (
-        <FormControl className="stand-select"  variant='standard' sx={{ m: 1, minWidth: 80 }}>
-            <Select id='screen-select' value={theme} onChange={handleChangeTheme} autoWidth>
-                <MenuItem value='light'>Light</MenuItem>
-                <MenuItem value='dark'>Tokyo Night</MenuItem>
+    const CustomMenuFontSize = () => (
+        <FormControl className='stand-select' variant='standard' sx={{ m: 1, minWidth: 80 }}>
+            <Select id='screen-select' value={fontSize} onChange={handleChangeFontSize} autoWidth>
+                <MenuItem value={"small"}>Small</MenuItem>
+                <MenuItem value={"default"}>Default</MenuItem>
+                <MenuItem value={"large"}>Large</MenuItem>
+               
+            </Select>
+        </FormControl>
+    );
+    const CustomMenuColor = () => (
+        <FormControl className='stand-select' variant='standard' sx={{ m: 1, minWidth: 80 }}>
+            <Select
+                id='color-select'
+                value={color}
+                onChange={handleChangeColor}
+                autoWidth
+            >
+                <MenuItem value={colorBucket.color_1}>
+                    <ColorBox color={colorBucket.color_1} sx={configColorBox} />
+                </MenuItem>
+                <MenuItem value={colorBucket.color_2}>
+                    <ColorBox color={colorBucket.color_2} sx={configColorBox} />
+                </MenuItem>
+                <MenuItem value={colorBucket.color_3}>
+                    <ColorBox color={colorBucket.color_3} sx={configColorBox} />
+                </MenuItem>
+                <MenuItem value={colorBucket.color_4}>
+                    <ColorBox color={colorBucket.color_4} sx={configColorBox} />
+                </MenuItem>
+                <MenuItem value={colorBucket.color_5}>
+                    <ColorBox color={colorBucket.color_5} sx={configColorBox} />
+                </MenuItem>
+                <MenuItem value={colorBucket.color_6}>
+                    <ColorBox color={colorBucket.color_6} sx={configColorBox} />
+                </MenuItem>
+                <MenuItem value={colorBucket.color_7}>
+                    <ColorBox color={colorBucket.color_7} sx={configColorBox} />
+                </MenuItem>
             </Select>
         </FormControl>
     );
 
     const handleChangeScreen = (e) => {
         console.log(e.target.value);
-        setScreen(e.target.value)
-
+        setScreen(e.target.value);
     };
-    const handleChangeTheme = (e) => {
+    const handleChangeColor = (e) => {
         console.log(e.target.value);
-        setTheme(e.target.value)
-
+        setColor(e.target.value);
+    };
+    const handleChangeFontSize = (e) => {
+        console.log(e.target.value);
+        setFontSize(e.target.value);
     };
     return (
         <div className={classes.root}>
+            <Button variant="text" endIcon={<LoginOutlined/> } sx={{position:"absolute", right:"10px", top:"10px"}}>Log out</Button>
             <Grid
+
                 container
                 className={classes.grid}
                 rowSpacing={1}
@@ -85,13 +133,18 @@ function Settings(props) {
                     <Box sx={{ mb: 3 }}>
                         <span className={classes.mainText}>Account</span>
                         <BoxDoubleContent
-                            content_1={<span style={{ fontWeight: 500 }}>Name:</span>}
+                            content_1={<span style={{ fontWeight: 600 }}>Name:</span>}
                             content_2={user.name}
                             customHeight='30px'
                         />
                         <BoxDoubleContent
-                            content_1={<span style={{ fontWeight: 500 }}>Gmail:</span>}
+                            content_1={<span style={{ fontWeight: 600 }}>Gmail:</span>}
                             content_2={user.gmail}
+                            customHeight='30px'
+                        />
+                        <BoxDoubleContent
+                            content_1={<Button variant="contained" size="small" sx={{marginTop:"15px"}}>Edit Profile</Button>}
+                            content_2={""}
                             customHeight='30px'
                         />
                     </Box>
@@ -100,17 +153,35 @@ function Settings(props) {
                     <Box sx={{ mt: 3, mb: 3 }}>
                         <span className={classes.mainText}>General</span>
                         <BoxDoubleContent
-                            content_1={<span style={{ fontWeight: 500 }}>Default screen:</span>}
+                            content_1={<span style={{ fontWeight: 600 }}>Default screen:</span>}
                             content_2={<CustomMenuScreen />}
                             customHeight='40px'
                         />
                         <BoxDoubleContent
-                            content_1={<span style={{ fontWeight: 500 }}>Default theme:</span>}
-                            content_2={<CustomMenuTheme/>}
+                            content_1={<span style={{ fontWeight: 600 }}>Default color:</span>}
+                            content_2={<CustomMenuColor />}
+                            customHeight='40px'
+                        />
+                         <BoxDoubleContent
+                            content_1={<span style={{ fontWeight: 600 }}>Default font size:</span>}
+                            content_2={<CustomMenuFontSize />}
                             customHeight='40px'
                         />
                     </Box>
                     <Divider variant='middle' sx={{ maxWidth: "500px", minWidth: "300px" }} />
+                    <Box sx={{ mt: 3 }}>
+                        <span className={classes.mainText}>Online Sync & Backup</span>
+                        <BoxDoubleContent
+                            content_1={<span style={{ fontWeight: 600 }}>Sync on lauch:</span>}
+                            content_2={<CheckIcon/>}
+                            customHeight='30px'
+                        />
+                        <BoxDoubleContent
+                            content_1={<span style={{ fontWeight: 600 }}>Auto backup:</span>}
+                            content_2={<CheckIcon/>}
+                            customHeight='30px'
+                        />
+                    </Box>
                 </Grid>
                 <Grid item xs={24} sm={12} md={6} lg={6}></Grid>
             </Grid>

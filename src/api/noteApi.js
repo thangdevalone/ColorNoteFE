@@ -11,5 +11,6 @@ const noteApi = {
         const url = `/notes/${idUser}`
         return axiosClient.get(url)
     }
+    
 }
 export default noteApi;

@@ -7,6 +7,8 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import store from './app/store';
 import reportWebVitals from './reportWebVitals';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -14,9 +16,12 @@ root.render(
 
   <Provider store={store}>
     <BrowserRouter>
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+
       <SnackbarProvider autoHideDuration={2500} anchorOrigin={{ vertical: 'top', horizontal: 'right' }}>
         <App />
       </SnackbarProvider>
+      </LocalizationProvider>
     </BrowserRouter>
   </Provider>
 

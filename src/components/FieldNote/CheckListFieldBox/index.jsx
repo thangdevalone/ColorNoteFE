@@ -7,16 +7,18 @@ import {
     ListItem,
     ListItemIcon,
     ListItemText,
-    TextField
+    TextField,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import PropTypes from "prop-types";
 import React, { useState } from "react";
 
 import { Add, Close } from "@mui/icons-material";
+import { useSnackbar } from "notistack";
 
 CheckListBox.propTypes = {
     bg: PropTypes.string.isRequired,
+    handleNoteForm: PropTypes.func.isRequired,
 };
 CheckListBox.defaultProps = {};
 const useStyles = makeStyles(() => ({
@@ -26,19 +28,32 @@ const useStyles = makeStyles(() => ({
     },
     noteContent: {},
 }));
-function CheckListBox({ bg }) {
+function CheckListBox({ bg, handleNoteForm }) {
     const classes = useStyles();
+    const [title, setTitle] = useState("");
+    const [listVal, setListVal] = useState([]);
+    const { enqueueSnackbar } = useSnackbar();
+
     const [listCheckbox, setListCheckbox] = useState([
         {
             node: (
                 <TextField
-                    id='content-textarea'
                     fullWidth
                     label=''
                     placeholder='Type check list here!'
                     multiline
+                    onChange={(e) => {
+                        const val = e.target.value;
+                        const newListVal = [...listVal];
+                        if (listVal.length === 0) {
+                            newListVal.push({ tx: val, done: false, id: 1 });
+                        } else {
+                            newListVal[newListVal.length - 1] = { tx: val, done: false, id: 1 };
+                        }
+                        setListVal(newListVal);
+                    }}
                     variant='standard'
-                    sx={{fontSize:"14px",paddingRight:"25px"}}
+                    sx={{ fontSize: "14px", paddingRight: "25px" }}
                     spellCheck='off'
                 />
             ),
@@ -46,6 +61,28 @@ function CheckListBox({ bg }) {
             id: 1,
         },
     ]);
+    const handleChangeTitle = (e) => {
+        const val = e.target.value;
+        setTitle(val);
+    };
+    const handleSubmit = () => {
+        if (title?.trim() === "" || listVal.find((item) => item === "")) {
+            enqueueSnackbar("Please fill in note!", { variant: "error" });
+            return;
+        }
+        const note = {
+            title: title,
+            color: bg,
+            type: "text",
+            data: listVal.map((item) => item.tx),
+        };
+
+        setListCheckbox([]);
+        setTitle("");
+        setListVal([]);
+        handleNoteForm(note);
+       
+    };
     const handleToggle = (id) => () => {
         const newListCheckBox = [...listCheckbox];
         newListCheckBox.forEach((element) => {
@@ -56,26 +93,51 @@ function CheckListBox({ bg }) {
 
         setListCheckbox(newListCheckBox);
     };
-    const handleAddCheck=()=>{
+    const handleAddCheck = () => {
         const newListCheckBox = [...listCheckbox];
-        newListCheckBox.push({    node: (
-            <TextField
-                id='content-textarea'
-                fullWidth
-                label=''
-                placeholder='Type check list here!'
-                multiline
+        const newListVal = [...listVal];
+        newListVal.push({ tx: "", done: false });
 
-                variant='standard'
-                sx={{fontSize:"14px",paddingRight:"25px"}}
-                spellCheck='off'
-            />
-        ),
-        checked: false,
-        id: newListCheckBox.length+1,
-    })
-    setListCheckbox(newListCheckBox)
-    }
+        newListCheckBox.push({
+            node: (
+                <TextField
+                    id='content-textarea'
+                    fullWidth
+                    label=''
+                    onChange={(e) => {
+                        const val = e.target.value;
+
+                        newListVal[newListVal.length - 1] = {
+                            tx: val,
+                            done: false,
+                            id: newListVal.length,
+                        };
+
+                        setListVal(newListVal);
+                    }}
+                    placeholder='Type check list here!'
+                    multiline
+                    variant='standard'
+                    sx={{ fontSize: "14px", paddingRight: "25px" }}
+                    spellCheck='off'
+                />
+            ),
+            checked: false,
+            id:
+                (newListCheckBox[newListCheckBox.length - 1]?.id ||
+                    Math.floor(Math.random() * 1000)) +
+                1 +
+                Math.floor(Math.random() * 1000),
+        });
+        setListCheckbox(newListCheckBox);
+    };
+    const handleDelList = (id) => {
+        const newList = [...listCheckbox];
+        console.log("a");
+        const rs = newList.filter((item) => item.id !== id);
+        setListCheckbox(rs);
+    };
+    console.log(listCheckbox);
     return (
         <Box
             className={classes.noteForm}
@@ -93,14 +155,20 @@ function CheckListBox({ bg }) {
                     fullWidth
                     id='text-title'
                     label=''
-                    
+                    onChange={handleChangeTitle}
+                    value={title}
                     placeholder="Note's Title"
                     variant='standard'
                     autoComplete='off'
-
                 />
-                <Button variant="text" className='note-create' sx={{color:'black'}}>Create</Button>
-
+                <Button
+                    onClick={handleSubmit}
+                    variant='text'
+                    className='note-create'
+                    sx={{ color: "black" }}
+                >
+                    Create
+                </Button>
             </Box>
             <Box className='note-list'>
                 <List sx={{ width: "100%" }}>
@@ -108,26 +176,43 @@ function CheckListBox({ bg }) {
                         const labelId = `checkbox-${ele.id}`;
 
                         return (
-                            <ListItem key={ele.id}  secondaryAction={
-                                <IconButton size="small"   edge="end" aria-label="delete">
-                                  <Close fontSize="small" />
-                                </IconButton>
-                              }>
+                            <ListItem
+                                key={ele.id}
+                                secondaryAction={
+                                    <IconButton
+                                        size='small'
+                                        onClick={() => {
+                                            handleDelList(ele.id);
+                                        }}
+                                        edge='end'
+                                        aria-label='delete'
+                                    >
+                                        <Close fontSize='small' />
+                                    </IconButton>
+                                }
+                            >
                                 <ListItemIcon>
                                     <Checkbox
                                         checked={ele.checked}
                                         onChange={handleToggle(ele.id)}
-                                        size="small"
+                                        size='small'
                                         inputProps={{ "aria-labelledby": labelId }}
                                     />
                                 </ListItemIcon>
 
-                                <ListItemText id={labelId} primary={ele.node} />
+                                {ele.node}
                             </ListItem>
                         );
                     })}
                 </List>
-                <Button variant="text" startIcon={<Add/>} onClick={handleAddCheck} sx={{color:'black',fontSize:"14px"}}>Add check list</Button>
+                <Button
+                    variant='text'
+                    startIcon={<Add />}
+                    onClick={handleAddCheck}
+                    sx={{ color: "black", fontSize: "14px" }}
+                >
+                    Add check list
+                </Button>
             </Box>
         </Box>
     );
