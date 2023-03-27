@@ -77,6 +77,11 @@ function ToolsNote(props) {
                     color={colorBucket.color_7}
                     sx={configColorBox}
                 />
+                <ColorBox
+                    handleClick={handleChangeNote}
+                    color={colorBucket.color_8}
+                    sx={configColorBox}
+                />
             </Box>
             <List>
                 <ListItem>

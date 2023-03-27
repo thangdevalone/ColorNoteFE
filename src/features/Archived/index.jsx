@@ -4,9 +4,11 @@ import classNames from "classnames";
 import PropTypes from "prop-types";
 import React from "react";
 import SearchInput from "../../components/SearchInput";
-import NoteItem from "./components/NoteItem";
+import NoteItem from "../../components/NoteItem";
+
 Archived.propTypes = {
     data: PropTypes.array.isRequired,
+    handleDelNote:PropTypes.func.isRequired
 };
 Archived.defaultProps = {};
 
@@ -37,10 +39,11 @@ const useStyle = makeStyles(() => ({
         width: "100% !important",
     },
 }));
-function Archived({ data }) {
+function Archived({ data,handleDelNote }) {
     const classes = useStyle();
 
-    const handleChange = () => {};
+   
+
     return (
         <div className={classes.root}>
             <div className={classes.headerFeature}>
@@ -55,7 +58,7 @@ function Archived({ data }) {
                 <Grid className={classes.grid} container spacing={3}>
                     {data.map((item) => (
                         <Grid key={item.idNote} item xs={24} sm={12} md={4} lg={3}>
-                            <NoteItem dataItem={item} />
+                            <NoteItem dataItem={item} handleDelNote={handleDelNote}/>
                         </Grid>
                     ))}
                 </Grid>

@@ -11,7 +11,7 @@ const useStyle = makeStyles(() => ({
         bottom: 0,
         background: "white",
         height: "64px",
-        width: "calc(100vw - 252px)",
+        width: "calc(100vw - 251px)",
         right: 0,
         textAlign: "center",
         padding: "8px",

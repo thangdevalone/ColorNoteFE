@@ -9,12 +9,15 @@ import {
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import BoxDoubleContent from "../../components/BoxDoubleContent";
 import ColorBox from "../../components/ColorBox";
 import { colorBucket } from "../../constants";
 import { CheckCircleOutline, LoginOutlined } from "@mui/icons-material";
 import CheckIcon from "../../components/CustomIcons/CheckIcon";
+import classNames from "classnames";
+import { logOut } from "../Auth/userSlice";
+import { useNavigate } from "react-router-dom";
 
 Settings.propTypes = {};
 const useStyle = makeStyles(() => ({
@@ -22,6 +25,7 @@ const useStyle = makeStyles(() => ({
         width: "calc(100vw - 250px)",
         height: "calc(100vh - 64px)",
         position: "absolute",
+        overflow:"hidden auto",
         top: 0,
         right: 0,
         zIndex: 10,
@@ -48,12 +52,21 @@ const configColorBox = {
 };
 function Settings(props) {
     const classes = useStyle();
+    const navigate=useNavigate()
     const user =
         useSelector((state) => state.user.current) || JSON.parse(localStorage.getItem("user"));
     const [screen, setScreen] = useState("archived");
     const [color, setColor] = useState(colorBucket.color_1);
     const [fontSize, setFontSize] = useState('default');
-
+    const dispatch=useDispatch()
+    const handleLogOut = async () => {
+    
+          const action = logOut();
+    
+          const resultAction = await dispatch(action);
+          navigate("/login");
+       
+      };
     const CustomMenuScreen = () => (
         <FormControl className='stand-select' variant='standard' sx={{ m: 1, minWidth: 80 }}>
             <Select id='screen-select' value={screen} onChange={handleChangeScreen} autoWidth>
@@ -103,6 +116,9 @@ function Settings(props) {
                 <MenuItem value={colorBucket.color_7}>
                     <ColorBox color={colorBucket.color_7} sx={configColorBox} />
                 </MenuItem>
+                <MenuItem value={colorBucket.color_8}>
+                    <ColorBox color={colorBucket.color_8} sx={configColorBox} />
+                </MenuItem>
             </Select>
         </FormControl>
     );
@@ -120,8 +136,11 @@ function Settings(props) {
         setFontSize(e.target.value);
     };
     return (
-        <div className={classes.root}>
-            <Button variant="text" endIcon={<LoginOutlined/> } sx={{position:"absolute", right:"10px", top:"10px"}}>Log out</Button>
+        <div className={classNames({
+            [classes.root]:true,
+            "box-container":true
+        })}>
+            <Button onClick={handleLogOut} variant="text" endIcon={<LoginOutlined/> } sx={{position:"absolute", right:"10px", top:"10px"}}>Log out</Button>
             <Grid
 
                 container
@@ -144,7 +163,7 @@ function Settings(props) {
                         />
                         <BoxDoubleContent
                             content_1={<Button variant="contained" size="small" sx={{marginTop:"15px"}}>Edit Profile</Button>}
-                            content_2={""}
+                            content_2={<span></span>}
                             customHeight='30px'
                         />
                     </Box>

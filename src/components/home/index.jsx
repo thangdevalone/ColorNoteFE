@@ -1,23 +1,23 @@
 import { KeyboardArrowRight } from "@mui/icons-material";
-import { Box, Button, Drawer, IconButton, LinearProgress, TextField } from "@mui/material";
+import { Box, Drawer, IconButton, LinearProgress } from "@mui/material";
 import { makeStyles } from "@mui/styles";
+import dayjs from "dayjs";
+import { useSnackbar } from "notistack";
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
-import { checkJWT } from "../../constants";
+import noteApi from "../../api/noteApi";
+import { checkJWT, colorBucket } from "../../constants";
 import Archived from "../../features/Archived";
-import Calendar from "../../features/Calendar";
+import CalendarTable from "../../features/Calendar";
 import Deleted from "../../features/Deleted";
 import Settings from "../../features/Setting";
+import PinnedIcon from "../CustomIcons/PinnedIcon";
+import CheckListBox from "../FieldNote/CheckListFieldBox";
+import TextFieldBox from "../FieldNote/TextFieldBox";
 import Footer from "../Footer";
 import SideBar from "../SideBar";
-import TextFieldBox from "../FieldNote/TextFieldBox";
 import ToolsNote from "../ToolsNote";
-import CheckListBox from "../FieldNote/CheckListFieldBox";
-import dayjs from "dayjs";
-import noteApi from "../../api/noteApi";
-import { useSelector } from "react-redux";
-import PinnedIcon from "../CustomIcons/PinnedIcon";
-import { useSnackbar } from "notistack";
 
 Home.propTypes = {};
 
@@ -36,12 +36,14 @@ function Home(props) {
     const user =
         useSelector((state) => state.user.current) || JSON.parse(localStorage.getItem("user"));
     const [isLogin, setIsLogin] = useState(false);
-    const [colorNote, setColorNote] = useState("#ffffff");
+    const [colorNote, setColorNote] = useState(colorBucket.color_1);
     const { pathname } = useLocation();
     const [drawerNew, setDrawerNew] = useState(false);
     const [type, setType] = useState("");
     const navigate = useNavigate();
     const [data, setData] = useState([]);
+    const [dataTrash, setDataTrash] = useState([]);
+
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const [options, setOptions] = useState({
@@ -59,20 +61,45 @@ function Home(props) {
             navigate("/login");
         }
         setIsLogin(true);
-    }, []);
-    useEffect(() => {
         (async () => {
             try {
-                const response = await noteApi.getNotes(1);
-                setData(response.notes || []);
+                const response1 = await noteApi.getNotes(1);
+                setData(response1.notes || []);
+                const response2 = await noteApi.getTrash(user.id);
+                setDataTrash(response2.notes || []);
             } catch (error) {}
         })();
     }, []);
+    
     const handleOpenDrawer = (param) => {
         setType(param);
         setDrawerNew(true);
         setOptions({ ...options, dueAt: dayjs() });
     };
+    const handleDelNote= async(idNote,type)=>{
+        try {
+            if (type==="trunc"){
+                const res=await noteApi.delTruncNote(idNote)
+                enqueueSnackbar(res.message, { variant: "success" });
+            }
+            if (type==="move"){
+                const res=await noteApi.delMoveTrash(idNote)
+                enqueueSnackbar(res.message, { variant: "success" });
+
+                const newData=[...dataTrash,res.note]
+                setDataTrash(newData)
+
+                const newData2=[...data]
+                const newDataFilter=newData2.filter((item)=>item.idNote!==idNote)
+                setData(newDataFilter)
+
+            }
+            
+        } catch (error) {
+            enqueueSnackbar(error.message, { variant: "error" });
+        }
+    }
+
     const handleNoteForm = async (value) => {
         const configOptions = {
             ...options,
@@ -111,6 +138,26 @@ function Home(props) {
     const handleOptionsNote = (param) => {
         setOptions({ ...options, ...param });
     };
+    const handleInTrash=async (idNote,type)=>{
+        try {
+            if (type==="trunc"){
+                const res=await noteApi.delTruncNote(idNote)
+                enqueueSnackbar(res.message, { variant: "success" });
+
+            }
+            if(type==="res"){
+                const res=await noteApi.restoreTrash(idNote)
+                enqueueSnackbar(res.message, { variant: "success" });
+                const newData=[...data,res.note]
+                setData(newData)
+            }
+            const newTrash=[...dataTrash]
+            const newTrashFilter=newTrash.filter((item)=>item.idNote!==idNote)
+            setDataTrash(newTrashFilter)
+        } catch (error) {
+            enqueueSnackbar(error.message, { variant: "error" });
+        }
+    }
     const view = !(pathname.split("/")[2] === "settings" || pathname.split("/")[2] === "calendar");
     return (
         <div>
@@ -233,9 +280,9 @@ function Home(props) {
                     </Drawer>
                     <Routes>
                         <Route path='/' element={<Navigate to='/home/archived' />} />
-                        <Route path='/calendar' element={<Calendar />} />
-                        <Route path='/archived' element={<Archived data={data} />} />
-                        <Route path='/deleted' element={<Deleted />} />
+                        <Route path='/calendar' element={<CalendarTable />} />
+                        <Route path='/archived' element={<Archived data={data} handleDelNote={handleDelNote} />} />
+                        <Route path='/deleted' element={<Deleted  data={dataTrash}  handleInTrash={handleInTrash}/>} />
                         <Route path='/settings' element={<Settings />} />
                     </Routes>
                     <Footer />

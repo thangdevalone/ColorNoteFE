@@ -1,10 +1,18 @@
-import { BorderLeft } from "@mui/icons-material";
+import { DeleteOutline, InfoOutlined } from "@mui/icons-material";
 import {
+    Box,
+    Button,
     Checkbox,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    IconButton,
     ListItem,
     ListItemButton,
     ListItemIcon,
     ListItemText,
+    Tooltip,
     Typography,
 } from "@mui/material";
 import { makeStyles } from "@mui/styles";
@@ -12,10 +20,11 @@ import classNames from "classnames";
 import dayjs from "dayjs";
 import PropTypes from "prop-types";
 import React, { useState } from "react";
-import PinnedIcon from "../../../components/CustomIcons/PinnedIcon";
+import PinnedIcon from "./CustomIcons/PinnedIcon";
 
-NoteItem.propTypes = {
+NoteItemDel.propTypes = {
     dataItem: PropTypes.object.isRequired,
+    handleDelNote: PropTypes.func.isRequired,
 };
 
 const useStyle = makeStyles(() => ({
@@ -31,9 +40,15 @@ const useStyle = makeStyles(() => ({
     title: {
         fontWeight: 500,
         fontSize: "24px",
-        marginBottom:"5px",
-        display:"inline-block"
+        width: "calc(100% - 80px)",
+        marginBottom: "5px",
+        display: "block",
+        cursor: "default",
+        whiteSpace: "nowrap",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
     },
+
     boxWrap: {
         fontWeight: 500,
         fontSize: "14px",
@@ -47,7 +62,7 @@ const useStyle = makeStyles(() => ({
     lineThrough: {
         textDecorationLine: "line-through",
     },
-    list:{
+    list: {
         "& .MuiButtonBase-root": {
             padding: "5px 10px!important",
         },
@@ -62,8 +77,9 @@ const useStyle = makeStyles(() => ({
         },
     },
 }));
-function NoteItem({ dataItem }) {
+function NoteItemDel({ dataItem, handleDelNote }) {
     const classes = useStyle();
+    const [open, setOpen] = React.useState(false);
     const [data, setData] = useState(dataItem);
 
     const handleChange = (id) => {
@@ -73,37 +89,101 @@ function NoteItem({ dataItem }) {
         const newData = { ...data, data: newList };
         setData(newData);
     };
+    const handleDelete = () => {
+        setOpen(false);
+
+        handleDelNote(dataItem.idNote, "trunc");
+    };
+    const handleMoveTrash = () => {
+        setOpen(false);
+        handleDelNote(dataItem.idNote, "move");
+    };
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
     return (
         <div className={classes.note} style={{ backgroundColor: `${data.color}` }}>
-            <span className={classes.title}>{data.title}</span>
-            {data.pinned?<span style={{ position: "absolute", top: "-10px", left: "-10px" }}>
-                <PinnedIcon />
-            </span>:""}
+            <Dialog
+                open={open}
+                onClose={handleClose}
+                aria-labelledby='alert-dialog-title'
+                aria-describedby='alert-dialog-description'
+            >
+                <DialogTitle id='alert-dialog-title'>{"Confirm delete note"}</DialogTitle>
+                <DialogContent sx={{ padding: "20px 20px 20px 40px", color: "rgba(0, 0, 0, 0.6)" }}>
+                    <ul>
+                        <li>
+                            <strong>Button Delete: </strong>Your note will be{" "}
+                            <b>permanently deleted </b> when clicking delete button
+                        </li>
+                        <li>
+                            <strong>Button Move Trash: </strong>Your notes will be deleted and then
+                            moved to the <b>trash bin</b>. You can restore it
+                        </li>
+                        <li>
+                            <strong>Button Cancel: </strong>No delete
+                        </li>
+                    </ul>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose}>Cancel</Button>
+                    <Button onClick={handleDelete}>Delete</Button>
+                    <Button onClick={handleMoveTrash} autoFocus>
+                        Move Trash
+                    </Button>
+                </DialogActions>
+            </Dialog>
+            <Box sx={{ position: "absolute", right: "10px" }}>
+                <IconButton color='primary' aria-label='detail note'>
+                    <InfoOutlined />
+                </IconButton>
+                <IconButton aria-label='delelte note' onClick={handleClickOpen}>
+                    <DeleteOutline />
+                </IconButton>
+            </Box>
+            <Tooltip title={<span style={{ fontSize: "14px" }}>{data.title}</span>} placement='top'>
+                <span className={classes.title}>{data.title}</span>
+            </Tooltip>
+
+            {data.pinned ? (
+                <span style={{ position: "absolute", top: "-10px", left: "-10px" }}>
+                    <PinnedIcon />
+                </span>
+            ) : (
+                ""
+            )}
             <>
                 {data.type === "text" && (
-                    <Typography
-                        variant='body2'
-                        sx={{
-                            overflow: "hidden",
-                            textOverflow: "ellipsis",
-                            display: "-webkit-box",
-                            WebkitLineClamp: "5",
-                            WebkitBoxOrient: "vertical",
+                    <div
+                        className='box-container'
+                        style={{
+                            width: "100%",
+                            overflow: "hidden auto",
+                            maxHeight: "130px",
+                            wordWrap: "break-word",
                         }}
                     >
-                        {data.data}
-                    </Typography>
+                        <Typography variant='body2'>{data.data}</Typography>
+                    </div>
                 )}
                 {data.type === "checklist" && (
-                    <div  className="box-container" style={{overflow:"hidden auto",maxHeight:"130px"}}>
+                    <div
+                        className='box-container'
+                        style={{ overflow: "hidden auto", maxHeight: "130px" }}
+                    >
                         {data.data.map((item) => {
                             const labelId = `checkbox-${data.idNode}-${item.id}`;
 
                             return (
                                 <ListItem
                                     className={classNames({
-                                        [classes.list]:true,
-                                        [classes.listDone]:item.status
+                                        [classes.list]: true,
+                                        [classes.listDone]: item.status,
                                     })}
                                     key={item.id}
                                     disablePadding
@@ -125,6 +205,7 @@ function NoteItem({ dataItem }) {
                                         </ListItemIcon>
                                         <ListItemText
                                             id={labelId}
+                                            sx={{ wordWrap: "break-word" }}
                                             primary={
                                                 <span
                                                     className={classNames({
@@ -149,4 +230,4 @@ function NoteItem({ dataItem }) {
     );
 }
 
-export default NoteItem;
+export default NoteItemDel;

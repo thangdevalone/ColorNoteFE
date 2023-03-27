@@ -8,18 +8,17 @@ import {
 } from "@mui/material";
 import Box from "@mui/material/Box";
 import { makeStyles } from "@mui/styles";
-import React, { useEffect } from "react";
+import { unwrapResult } from "@reduxjs/toolkit";
+import { useSnackbar } from "notistack";
+import React from "react";
 import { useForm } from "react-hook-form";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import InputField from "../../../components/FormControls/InputField";
 import PasswordField from "../../../components/FormControls/PasswordField";
 import useWindowDimensions from "../../../customHook/WindowDimensions";
 import { login } from "../userSlice";
-import { unwrapResult } from "@reduxjs/toolkit";
-import { useDispatch } from "react-redux";
-import { useSnackbar } from "notistack";
-import { useNavigate } from "react-router-dom";
-import { checkJWT } from "../../../constants";
 Login.propTypes = {};
 const useStyle = makeStyles(() => ({
   loginContainer: {
