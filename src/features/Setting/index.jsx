@@ -1,23 +1,15 @@
-import {
-    Box,
-    Button,
-    Divider,
-    FormControl,
-    Grid,
-    MenuItem,
-    Select
-} from "@mui/material";
+import { Box, Button, Divider, FormControl, Grid, MenuItem, Select } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import BoxDoubleContent from "../../components/BoxDoubleContent";
 import ColorBox from "../../components/ColorBox";
-import { colorBucket } from "../../constants";
-import { CheckCircleOutline, LoginOutlined } from "@mui/icons-material";
-import CheckIcon from "../../components/CustomIcons/CheckIcon";
+import { LoginOutlined } from "@mui/icons-material";
 import classNames from "classnames";
-import { logOut } from "../Auth/userSlice";
 import { useNavigate } from "react-router-dom";
+import CheckIcon from "../../components/CustomIcons/CheckIcon";
+import { colorBucket, convertColor } from "../../constants";
+import { logOut } from "../Auth/userSlice";
 
 Settings.propTypes = {};
 const useStyle = makeStyles(() => ({
@@ -25,7 +17,7 @@ const useStyle = makeStyles(() => ({
         width: "calc(100vw - 250px)",
         height: "calc(100vh - 64px)",
         position: "absolute",
-        overflow:"hidden auto",
+        overflow: "hidden auto",
         top: 0,
         right: 0,
         zIndex: 10,
@@ -47,26 +39,24 @@ const configColorBox = {
     width: "30px",
     height: "30px",
     borderRadius: "50%",
-    margin:"0 auto",
-    border:"1px solid black"
+    margin: "0 auto",
+    border: "1px solid black",
 };
 function Settings(props) {
     const classes = useStyle();
-    const navigate=useNavigate()
+    const navigate = useNavigate();
     const user =
         useSelector((state) => state.user.current) || JSON.parse(localStorage.getItem("user"));
     const [screen, setScreen] = useState("archived");
-    const [color, setColor] = useState(colorBucket.color_1);
-    const [fontSize, setFontSize] = useState('default');
-    const dispatch=useDispatch()
+    const [color, setColor] = useState(convertColor(colorBucket.color_1));
+    const [fontSize, setFontSize] = useState("default");
+    const dispatch = useDispatch();
     const handleLogOut = async () => {
-    
-          const action = logOut();
-    
-          const resultAction = await dispatch(action);
-          navigate("/login");
-       
-      };
+        const action = logOut();
+
+        const resultAction = await dispatch(action);
+        navigate("/login");
+    };
     const CustomMenuScreen = () => (
         <FormControl className='stand-select' variant='standard' sx={{ m: 1, minWidth: 80 }}>
             <Select id='screen-select' value={screen} onChange={handleChangeScreen} autoWidth>
@@ -83,40 +73,34 @@ function Settings(props) {
                 <MenuItem value={"small"}>Small</MenuItem>
                 <MenuItem value={"default"}>Default</MenuItem>
                 <MenuItem value={"large"}>Large</MenuItem>
-               
             </Select>
         </FormControl>
     );
     const CustomMenuColor = () => (
         <FormControl className='stand-select' variant='standard' sx={{ m: 1, minWidth: 80 }}>
-            <Select
-                id='color-select'
-                value={color}
-                onChange={handleChangeColor}
-                autoWidth
-            >
-                <MenuItem value={colorBucket.color_1}>
+            <Select id='color-select' value={color} onChange={handleChangeColor} autoWidth>
+                <MenuItem value={convertColor(colorBucket.color_1)}>
                     <ColorBox color={colorBucket.color_1} sx={configColorBox} />
                 </MenuItem>
-                <MenuItem value={colorBucket.color_2}>
+                <MenuItem value={convertColor(colorBucket.color_2)}>
                     <ColorBox color={colorBucket.color_2} sx={configColorBox} />
                 </MenuItem>
-                <MenuItem value={colorBucket.color_3}>
+                <MenuItem value={convertColor(colorBucket.color_3)}>
                     <ColorBox color={colorBucket.color_3} sx={configColorBox} />
                 </MenuItem>
-                <MenuItem value={colorBucket.color_4}>
+                <MenuItem value={convertColor(colorBucket.color_4)}>
                     <ColorBox color={colorBucket.color_4} sx={configColorBox} />
                 </MenuItem>
-                <MenuItem value={colorBucket.color_5}>
+                <MenuItem value={convertColor(colorBucket.color_5)}>
                     <ColorBox color={colorBucket.color_5} sx={configColorBox} />
                 </MenuItem>
-                <MenuItem value={colorBucket.color_6}>
+                <MenuItem value={convertColor(colorBucket.color_6)}>
                     <ColorBox color={colorBucket.color_6} sx={configColorBox} />
                 </MenuItem>
-                <MenuItem value={colorBucket.color_7}>
+                <MenuItem value={convertColor(colorBucket.color_7)}>
                     <ColorBox color={colorBucket.color_7} sx={configColorBox} />
                 </MenuItem>
-                <MenuItem value={colorBucket.color_8}>
+                <MenuItem value={convertColor(colorBucket.color_8)}>
                     <ColorBox color={colorBucket.color_8} sx={configColorBox} />
                 </MenuItem>
             </Select>
@@ -136,13 +120,21 @@ function Settings(props) {
         setFontSize(e.target.value);
     };
     return (
-        <div className={classNames({
-            [classes.root]:true,
-            "box-container":true
-        })}>
-            <Button onClick={handleLogOut} variant="text" endIcon={<LoginOutlined/> } sx={{position:"absolute", right:"10px", top:"10px"}}>Log out</Button>
+        <div
+            className={classNames({
+                [classes.root]: true,
+                "box-container": true,
+            })}
+        >
+            <Button
+                onClick={handleLogOut}
+                variant='text'
+                endIcon={<LoginOutlined />}
+                sx={{ position: "absolute", right: "10px", top: "10px" }}
+            >
+                Log out
+            </Button>
             <Grid
-
                 container
                 className={classes.grid}
                 rowSpacing={1}
@@ -162,7 +154,11 @@ function Settings(props) {
                             customHeight='30px'
                         />
                         <BoxDoubleContent
-                            content_1={<Button variant="contained" size="small" sx={{marginTop:"15px"}}>Edit Profile</Button>}
+                            content_1={
+                                <Button variant='contained' size='small' sx={{ marginTop: "15px" }}>
+                                    Edit Profile
+                                </Button>
+                            }
                             content_2={<span></span>}
                             customHeight='30px'
                         />
@@ -181,7 +177,7 @@ function Settings(props) {
                             content_2={<CustomMenuColor />}
                             customHeight='40px'
                         />
-                         <BoxDoubleContent
+                        <BoxDoubleContent
                             content_1={<span style={{ fontWeight: 600 }}>Default font size:</span>}
                             content_2={<CustomMenuFontSize />}
                             customHeight='40px'
@@ -192,12 +188,12 @@ function Settings(props) {
                         <span className={classes.mainText}>Online Sync & Backup</span>
                         <BoxDoubleContent
                             content_1={<span style={{ fontWeight: 600 }}>Sync on lauch:</span>}
-                            content_2={<CheckIcon/>}
+                            content_2={<CheckIcon />}
                             customHeight='30px'
                         />
                         <BoxDoubleContent
                             content_1={<span style={{ fontWeight: 600 }}>Auto backup:</span>}
-                            content_2={<CheckIcon/>}
+                            content_2={<CheckIcon />}
                             customHeight='30px'
                         />
                     </Box>

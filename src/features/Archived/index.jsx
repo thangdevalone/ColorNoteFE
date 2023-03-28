@@ -8,7 +8,8 @@ import NoteItem from "../../components/NoteItem";
 
 Archived.propTypes = {
     data: PropTypes.array.isRequired,
-    handleDelNote:PropTypes.func.isRequired
+    handleDelNote:PropTypes.func.isRequired,
+    setArchivedData:PropTypes.func.isRequired
 };
 Archived.defaultProps = {};
 
@@ -39,7 +40,7 @@ const useStyle = makeStyles(() => ({
         width: "100% !important",
     },
 }));
-function Archived({ data,handleDelNote }) {
+function Archived({ data,handleDelNote ,setArchivedData}) {
     const classes = useStyle();
 
    
@@ -58,7 +59,7 @@ function Archived({ data,handleDelNote }) {
                 <Grid className={classes.grid} container spacing={3}>
                     {data.map((item) => (
                         <Grid key={item.idNote} item xs={24} sm={12} md={4} lg={3}>
-                            <NoteItem dataItem={item} handleDelNote={handleDelNote}/>
+                            <NoteItem dataItem={item} setArchivedData={setArchivedData} handleDelNote={handleDelNote}/>
                         </Grid>
                     ))}
                 </Grid>

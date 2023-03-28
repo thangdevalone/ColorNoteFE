@@ -27,7 +27,14 @@ const noteApi = {
     restoreTrash(idNote){
         const url = `/trash-res/${idNote}`
         return axiosClient.post(url)
+    },
+    editNote(idNote,param){
+        const url = `/notes/${idNote}`
+        return axiosClient.patch(url,param)
+    },
+    tick(idData){
+        const url = `/tick/${idData}`
+        return axiosClient.patch(url)
     }
-    
 }
 export default noteApi;

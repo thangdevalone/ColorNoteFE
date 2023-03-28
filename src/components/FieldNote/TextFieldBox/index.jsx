@@ -2,11 +2,15 @@ import { Box, Button, TextField } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 import PropTypes from "prop-types";
 import React, { useState } from "react";
+import { convertColor } from "../../../constants";
 
 TextFieldBox.propTypes = {
-    bg: PropTypes.string.isRequired,
+    bg: PropTypes.object.isRequired,
     handleNoteForm:PropTypes.func.isRequired,
     isSubmitting:PropTypes.bool.isRequired,
+    cx:PropTypes.string,
+    tt:PropTypes.string,
+    action:PropTypes.string.isRequired
 };
 TextFieldBox.defaultProps = {};
 const useStyles = makeStyles(() => ({
@@ -16,10 +20,10 @@ const useStyles = makeStyles(() => ({
     },
   
 }));
-function TextFieldBox({ bg,handleNoteForm,isSubmitting }) {
+function TextFieldBox({ bg,handleNoteForm,isSubmitting,cx="",tt="",action }) {
     const classes = useStyles();
-    const [title,setTitle]=useState("")
-    const [content,setContent]=useState("")
+    const [title,setTitle]=useState(tt)
+    const [content,setContent]=useState(cx)
     const handleChangeContent=(e)=>{
         const val=e.target.value
         setContent(val)
@@ -36,8 +40,10 @@ function TextFieldBox({ bg,handleNoteForm,isSubmitting }) {
             'type':'text',
             'data':content
         }
-        setTitle('')
-        setContent('')
+        if(action==='Create'){
+            setTitle('')
+            setContent('')
+        }
         handleNoteForm(note)
         
         
@@ -47,7 +53,7 @@ function TextFieldBox({ bg,handleNoteForm,isSubmitting }) {
         <Box
             className={classes.noteForm}
             sx={{
-                backgroundColor: `${bg}`,
+                backgroundColor: `${convertColor(bg)}`,
                 padding: "7px",
                 borderRadius: "5px",
                 boxShadow:
@@ -66,7 +72,7 @@ function TextFieldBox({ bg,handleNoteForm,isSubmitting }) {
                     variant='standard'
                     autoComplete='off'
                 />
-                <Button disabled={isSubmitting} onClick={handleSubmit} variant="text" className='note-create' sx={{color:'black'}}>Create</Button>
+                <Button disabled={isSubmitting} onClick={handleSubmit} variant="text" className='note-create' sx={{color:'black'}}>{action}</Button>
             </Box>
             <Box className="note-content">
                 <TextField

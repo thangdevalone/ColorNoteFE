@@ -79,6 +79,9 @@ const useStyle = makeStyles(() => ({
         borderLeft:"1px solid #fcfcfc",
         overflow:"hidden auto",
         zIndex: 10,
+        "& *:not(.basic-text)":{
+            fontWeight:"600 !important"
+        }
     },
 }));
 const getMonthData = (value) => {

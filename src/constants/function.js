@@ -19,3 +19,7 @@ export function checkJWT(){
     return isExpried
 }
 
+
+export function convertColor(object_color){
+    return `rgba(${object_color.r},${object_color.g},${object_color.b},${object_color.a})`
+}

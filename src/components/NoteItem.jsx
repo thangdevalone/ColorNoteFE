@@ -1,4 +1,4 @@
-import { DeleteOutline, InfoOutlined } from "@mui/icons-material";
+import { DeleteOutline, EditOutlined, InfoOutlined, KeyboardArrowRight } from "@mui/icons-material";
 import {
     Box,
     Button,
@@ -7,7 +7,9 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
+    Drawer,
     IconButton,
+    LinearProgress,
     ListItem,
     ListItemButton,
     ListItemIcon,
@@ -21,10 +23,17 @@ import dayjs from "dayjs";
 import PropTypes from "prop-types";
 import React, { useState } from "react";
 import PinnedIcon from "./CustomIcons/PinnedIcon";
+import CheckListBox from "./FieldNote/CheckListFieldBox";
+import TextFieldBox from "./FieldNote/TextFieldBox";
+import ToolsNote from "./ToolsNote";
+import { convertColor } from "../constants";
+import noteApi from "../api/noteApi";
+import { useSnackbar } from "notistack";
 
-NoteItemDel.propTypes = {
+NoteItem.propTypes = {
     dataItem: PropTypes.object.isRequired,
     handleDelNote: PropTypes.func.isRequired,
+    setArchivedData:PropTypes.func.isRequired
 };
 
 const useStyle = makeStyles(() => ({
@@ -77,17 +86,36 @@ const useStyle = makeStyles(() => ({
         },
     },
 }));
-function NoteItemDel({ dataItem, handleDelNote }) {
+function NoteItem({ dataItem, handleDelNote ,setArchivedData}) {
     const classes = useStyle();
     const [open, setOpen] = React.useState(false);
-    const [data, setData] = useState(dataItem);
+    const [drawerEdit, setDrawerEdit] = useState(false);
+    const [pinned, setPinned] = useState(dataItem.pinned);
+    const [colorNote, setColorNote] = useState(dataItem.color);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const {enqueueSnackbar}=useSnackbar()
+    const [options, setOptions] = useState({
+        dueAt:
+            typeof dataItem.dueAt !== "object"
+                ? dayjs(dataItem.dueAt)
+                : dataItem.dueAt,
+        remindAt: dataItem.remindAt,
+        lock: dataItem.lock,
+        share: dataItem.share,
+    });
+    const handleChange = async (id) => {
+       
+        try {
+            await noteApi.tick(id)
+            const newList = dataItem.data;
+            const itemIndex = dataItem.data.findIndex((item) => item.id === id);
+            newList[itemIndex] = { ...newList[itemIndex], status: !Boolean(newList[itemIndex].status) };
+            const newData = { ...dataItem, data: newList };
+            setArchivedData(newData);
 
-    const handleChange = (id) => {
-        const newList = data.data;
-        const itemIndex = data.data.findIndex((item) => item.id === id);
-        newList[itemIndex] = { ...newList[itemIndex], status: !Boolean(newList[itemIndex].status) };
-        const newData = { ...data, data: newList };
-        setData(newData);
+        } catch (error) {
+            enqueueSnackbar(error.message, { variant: "error" });
+        }
     };
     const handleDelete = () => {
         setOpen(false);
@@ -98,6 +126,7 @@ function NoteItemDel({ dataItem, handleDelNote }) {
         setOpen(false);
         handleDelNote(dataItem.idNote, "move");
     };
+
     const handleClickOpen = () => {
         setOpen(true);
     };
@@ -106,8 +135,155 @@ function NoteItemDel({ dataItem, handleDelNote }) {
         setOpen(false);
     };
 
+    const handleOpenDrawer = () => {
+        setDrawerEdit(true);
+    };
+    const handleChangeNote = (color) => {
+        setColorNote(color);
+    };
+    const handleOptionsNote = (param) => {
+        setOptions({ ...options, ...param });
+    };
+    const handleNoteForm = async (value) => {
+        const configOptions = {
+            ...options,
+            dueAt:
+                typeof options.dueAt === "object"
+                    ? dayjs(options.dueAt).format("DD/MM/YYYY hh:mm A Z")
+                    : options.dueAt,
+        };
+        const configParam = {
+            ...value,
+            ...configOptions,
+            pinned: pinned,
+            type: dataItem.type,
+        };
+
+        try {
+            setIsSubmitting(true);
+            const res = await noteApi.editNote(dataItem.idNote, configParam);
+            setIsSubmitting(false);
+
+            enqueueSnackbar(res.message, { variant: "success" });
+            
+            setDrawerEdit(false);
+            setArchivedData(dataItem.idNote,res.note)
+        } catch (error) {
+            setIsSubmitting(false);
+            enqueueSnackbar(error.message, { variant: "error" });
+        }
+    };
+    console.log(dataItem)
     return (
-        <div className={classes.note} style={{ backgroundColor: `${data.color}` }}>
+        <div className={classes.note} style={{ backgroundColor: `${convertColor(dataItem.color)}` }}>
+            <Drawer
+                variant='persistent'
+                className='box-container'
+                anchor='right'
+                open={drawerEdit}
+                sx={{
+                    width: "400px",
+                    position: "relative",
+                    flexShrink: 0,
+                    [`& .MuiDrawer-paper`]: {
+                        width: "400px",
+                        boxSizing: "border-box",
+                        height: "calc(100% - 65px)",
+                    },
+                }}
+            >
+                {isSubmitting && <LinearProgress className='pg-load' />}
+                <Box sx={{ height: "100%", padding: "10px 20px 0px 20px" }}>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            position: "relative",
+                        }}
+                    >
+                        <IconButton
+                            onClick={() => {
+                                setDrawerEdit(false);
+                            }}
+                            sx={{ position: "absolute", left: "0" }}
+                            aria-label='close'
+                            size='medium'
+                        >
+                            <KeyboardArrowRight fontSize='large' />
+                        </IconButton>
+
+                        <img
+                            style={{
+                                width: "70px",
+                            }}
+                            src='../../../assets/home-icon.png'
+                            alt='homeicon'
+                        />
+                        <span
+                            style={{
+                                color: " #6A53CC",
+                                fontSize: "30px",
+                                fontWeight: 800,
+                                marginLeft: "10px",
+                            }}
+                        >
+                            Edit
+                        </span>
+                    </Box>
+
+                    <Box
+                        className='box-container'
+                        sx={{
+                            position: "relative",
+                            height: "calc((100% - 100px)/2)",
+                            overflow: "hidden auto",
+                            padding: "10px",
+                        }}
+                    >
+                        <span
+                            onClick={() => {
+                                setPinned(!pinned);
+                            }}
+                            style={{
+                                cursor: "pointer",
+                                position: "absolute",
+                                top: "10px",
+                                left: "5px",
+                            }}
+                        >
+                            <PinnedIcon active={Boolean(pinned)} />
+                        </span>
+                        {dataItem.type === "text" && (
+                            <TextFieldBox
+                                isSubmitting={isSubmitting}
+                                handleNoteForm={handleNoteForm}
+                                bg={colorNote}
+                                action='Edit'
+                                cx={dataItem.data}
+                                tt={dataItem.title}
+                            />
+                        )}
+                        {dataItem.type === "checklist" && (
+                            <CheckListBox
+                                isSubmitting={isSubmitting}
+                                handleNoteForm={handleNoteForm}
+                                bg={colorNote}
+                                action='Edit'
+                                list={dataItem.data}
+                                tt={dataItem.title}
+                            />
+                        )}
+                    </Box>
+                    <Box style={{ height: "calc((100% - 50px)/2)", marginTop: "5px" }}>
+                        <ToolsNote
+                            options={options}
+                            handleChangeNote={handleChangeNote}
+                            handleOptionsNote={handleOptionsNote}
+                        />
+                    </Box>
+                </Box>
+            </Drawer>
             <Dialog
                 open={open}
                 onClose={handleClose}
@@ -139,18 +315,18 @@ function NoteItemDel({ dataItem, handleDelNote }) {
                 </DialogActions>
             </Dialog>
             <Box sx={{ position: "absolute", right: "10px" }}>
-                <IconButton color='primary' aria-label='detail note'>
-                    <InfoOutlined />
+                <IconButton color='primary' onClick={handleOpenDrawer} aria-label='edit note'>
+                    <EditOutlined />
                 </IconButton>
                 <IconButton aria-label='delelte note' onClick={handleClickOpen}>
                     <DeleteOutline />
                 </IconButton>
             </Box>
-            <Tooltip title={<span style={{ fontSize: "14px" }}>{data.title}</span>} placement='top'>
-                <span className={classes.title}>{data.title}</span>
+            <Tooltip title={<span style={{ fontSize: "14px" }}>{dataItem.title}</span>} placement='top'>
+                <span className={classes.title}>{dataItem.title}</span>
             </Tooltip>
 
-            {data.pinned ? (
+            {dataItem.pinned ? (
                 <span style={{ position: "absolute", top: "-10px", left: "-10px" }}>
                     <PinnedIcon />
                 </span>
@@ -158,7 +334,7 @@ function NoteItemDel({ dataItem, handleDelNote }) {
                 ""
             )}
             <>
-                {data.type === "text" && (
+                {dataItem.type === "text" && (
                     <div
                         className='box-container'
                         style={{
@@ -168,16 +344,16 @@ function NoteItemDel({ dataItem, handleDelNote }) {
                             wordWrap: "break-word",
                         }}
                     >
-                        <Typography variant='body2'>{data.data}</Typography>
+                        <Typography variant='body2'>{dataItem.data}</Typography>
                     </div>
                 )}
-                {data.type === "checklist" && (
+                {dataItem.type === "checklist" && (
                     <div
                         className='box-container'
                         style={{ overflow: "hidden auto", maxHeight: "130px" }}
                     >
-                        {data.data.map((item) => {
-                            const labelId = `checkbox-${data.idNode}-${item.id}`;
+                        {dataItem.data.map((item) => {
+                            const labelId = `checkbox-${dataItem.idNode}-${item.id}`;
 
                             return (
                                 <ListItem
@@ -224,10 +400,10 @@ function NoteItemDel({ dataItem, handleDelNote }) {
                 )}
             </>
             <div className={classes.boxWrap}>
-                Due at: {dayjs(data.dueAt).format("DD/MM/YYYY hh:mm A")}
+                Due at: {dayjs(dataItem.dueAt).format("DD/MM/YYYY hh:mm A")}
             </div>
         </div>
     );
 }
 
-export default NoteItemDel;
+export default NoteItem;

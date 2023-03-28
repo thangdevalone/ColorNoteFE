@@ -76,20 +76,13 @@ function Register(props) {
     .shape({
       name: yup
         .string()
-        .required("Please enter your full name")
-        .test(
-          "should has at least two words",
-          "Please enter at least two words",
-          (values) => {
-            return values.split(" ").length >= 2;
-          }
-        ),
+        .required("Please enter your full name"),
       username: yup
         .string()
         .required("Please enter your username")
         .test(
-          "should has at least 6 characters",
-          "Please enter at least 6 characters ",
+          "should has at least 5 characters",
+          "Please enter at least 5 characters ",
           (values) => {
             return values.length >= 5;
           }

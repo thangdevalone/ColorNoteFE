@@ -1,9 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Box } from '@mui/material';
+import { convertColor } from '../constants';
 
 ColorBox.propTypes = {
-    color:PropTypes.string.isRequired,
+    color:PropTypes.object.isRequired,
     sx:PropTypes.object,
     handleClick:PropTypes.func
 };
@@ -18,7 +19,7 @@ ColorBox.defaultProps={
 
 function ColorBox({color,sx,handleClick}) {
     return (
-        <Box onClick={()=>{if(handleClick) handleClick(color)}} sx={{...sx,backgroundColor:`${color}`}}>
+        <Box onClick={()=>{if(handleClick) handleClick(color)}} sx={{...sx,backgroundColor:`${convertColor(color)}`}}>
             
         </Box>
     );

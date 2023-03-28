@@ -1,13 +1,50 @@
 export const colorBucket={
-    color_1:"#FD8E8E",
-    color_2:"#FDC48E",
-    color_3:"#FAE28C",
-    color_4:"#D3EF82",
-    color_5:"#A5EF82",
-    color_6:"#82EFBB",
-    color_7:"#82C8EF",
-    color_8:"#8293EF",
-
-
-    
+    color_1:{
+        r:255,
+        g:125,
+        b:125,
+        a:0.87,
+    },
+    color_2:{
+        r:255,
+        g:188,
+        b:125,
+        a:0.87,
+    },
+    color_3:{
+        r:211,
+        g:226,
+        b:140,
+        a:1,
+    },
+    color_4:{
+        r:211,
+        g:239,
+        b:130,
+        a:1,
+    },
+    color_5:{
+        r:165,
+        g:239,
+        b:130,
+        a:1,
+    },
+    color_6:{
+        r:130,
+        g:239,
+        b:187,
+        a:1,
+    },
+    color_7:{
+        r:130,
+        g:239,
+        b:187,
+        a:1,
+    },
+    color_8:{
+        r:130,
+        g:147,
+        b:239,
+        a:1,
+    },
 }

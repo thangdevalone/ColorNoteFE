@@ -3,22 +3,22 @@ import { Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from 
 import { MobileDateTimePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
 import PropTypes from "prop-types";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+
 import { colorBucket } from "../../constants";
 import ColorBox from "../ColorBox";
 import RemindIcon from "../CustomIcons/RemindIcon";
 
 ToolsNote.propTypes = {
     handleChangeNote: PropTypes.func.isRequired,
-    handleOptionsNote:PropTypes.func.isRequired,
-    options:PropTypes.object.isRequired,
+    handleOptionsNote: PropTypes.func.isRequired,
+    options: PropTypes.object.isRequired,
 };
 const configColorBox = { width: "24px", height: "24px", borderRadius: "50%", cursor: "pointer" };
 
 function ToolsNote(props) {
-    const { handleChangeNote,handleOptionsNote,options } = props;
+    const { handleChangeNote, handleOptionsNote, options } = props;
     const [popDate, setPopDate] = useState(false);
-
     const [dueAt, setDueAt] = useState(options.dueAt);
     const handleClickDate = () => {
         setPopDate(true);
@@ -120,16 +120,16 @@ function ToolsNote(props) {
 
                         <ListItemText primary='Due at' />
                     </ListItemButton>
-                    <MobileDateTimePicker 
-                        
+                    <MobileDateTimePicker
                         open={popDate}
-                        
+                        disablePast={true}
                         onAccept={() => {
-                        
                             setPopDate(false);
-                            handleOptionsNote({'dueAt':dayjs(dueAt).format('DD/MM/YYYY hh:mm A Z')})
+                            handleOptionsNote({
+                                dueAt: dayjs(dueAt).format("DD/MM/YYYY hh:mm A Z"),
+                            });
                         }}
-                        format="DD/MM/YYYY hh:mm A"
+                        format='DD/MM/YYYY hh:mm A'
                         onClose={() => {
                             setPopDate(false);
                         }}

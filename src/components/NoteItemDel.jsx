@@ -16,8 +16,9 @@ import dayjs from "dayjs";
 import PropTypes from "prop-types";
 import React, { useState } from "react";
 import PinnedIcon from "./CustomIcons/PinnedIcon";
+import { convertColor } from "../constants";
 
-NoteItem.propTypes = {
+NoteItemDel.propTypes = {
     dataItem: PropTypes.object.isRequired,
     handleInTrash: PropTypes.func.isRequired,
 };
@@ -73,7 +74,7 @@ const useStyle = makeStyles(() => ({
         },
     },
 }));
-function NoteItem({ dataItem, handleInTrash }) {
+function NoteItemDel({ dataItem, handleInTrash }) {
     const classes = useStyle();
     const [data, setData] = useState(dataItem);
 
@@ -92,7 +93,7 @@ function NoteItem({ dataItem, handleInTrash }) {
     };
 
     return (
-        <div className={classes.note} style={{ backgroundColor: `${data.color}` }}>
+        <div className={classes.note} style={{ backgroundColor: `${convertColor(data.color)}` }}>
             <Box sx={{ position: "absolute", right: "10px" }}>
                 <IconButton color='primary' aria-label='restore note' onClick={handleRestore}>
                     <RestoreOutlined />
@@ -185,4 +186,4 @@ function NoteItem({ dataItem, handleInTrash }) {
     );
 }
 
-export default NoteItem;
+export default NoteItemDel;

@@ -7,7 +7,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import noteApi from "../../api/noteApi";
-import { checkJWT, colorBucket } from "../../constants";
+import { checkJWT, colorBucket, convertColor } from "../../constants";
 import Archived from "../../features/Archived";
 import CalendarTable from "../../features/Calendar";
 import Deleted from "../../features/Deleted";
@@ -59,46 +59,44 @@ function Home(props) {
     useEffect(() => {
         if (checkJWT()) {
             navigate("/login");
+        } else {
+            setIsLogin(true);
+            (async () => {
+                try {
+                    const response1 = await noteApi.getNotes(1);
+                    setData(response1.notes || []);
+                    const response2 = await noteApi.getTrash(user.id);
+                    setDataTrash(response2.notes || []);
+                } catch (error) {}
+            })();
         }
-        setIsLogin(true);
-        (async () => {
-            try {
-                const response1 = await noteApi.getNotes(1);
-                setData(response1.notes || []);
-                const response2 = await noteApi.getTrash(user.id);
-                setDataTrash(response2.notes || []);
-            } catch (error) {}
-        })();
     }, []);
-    
+
     const handleOpenDrawer = (param) => {
         setType(param);
         setDrawerNew(true);
         setOptions({ ...options, dueAt: dayjs() });
     };
-    const handleDelNote= async(idNote,type)=>{
+    const handleDelNote = async (idNote, type) => {
         try {
-            if (type==="trunc"){
-                const res=await noteApi.delTruncNote(idNote)
+            if (type === "trunc") {
+                const res = await noteApi.delTruncNote(idNote);
                 enqueueSnackbar(res.message, { variant: "success" });
             }
-            if (type==="move"){
-                const res=await noteApi.delMoveTrash(idNote)
+            if (type === "move") {
+                const res = await noteApi.delMoveTrash(idNote);
                 enqueueSnackbar(res.message, { variant: "success" });
 
-                const newData=[...dataTrash,res.note]
-                setDataTrash(newData)
-
-                const newData2=[...data]
-                const newDataFilter=newData2.filter((item)=>item.idNote!==idNote)
-                setData(newDataFilter)
-
+                const newData = [...dataTrash, res.note];
+                setDataTrash(newData);
             }
-            
+            const newData2 = [...data];
+            const newDataFilter = newData2.filter((item) => item.idNote !== idNote);
+            setData(newDataFilter);
         } catch (error) {
             enqueueSnackbar(error.message, { variant: "error" });
         }
-    }
+    };
 
     const handleNoteForm = async (value) => {
         const configOptions = {
@@ -112,7 +110,7 @@ function Home(props) {
             ...value,
             ...configOptions,
             pinned: pinned,
-            type:type,
+            type: type,
         };
         console.log(configParam);
 
@@ -138,25 +136,30 @@ function Home(props) {
     const handleOptionsNote = (param) => {
         setOptions({ ...options, ...param });
     };
-    const handleInTrash=async (idNote,type)=>{
+    const handleInTrash = async (idNote, type) => {
         try {
-            if (type==="trunc"){
-                const res=await noteApi.delTruncNote(idNote)
+            if (type === "trunc") {
+                const res = await noteApi.delTruncNote(idNote);
                 enqueueSnackbar(res.message, { variant: "success" });
-
             }
-            if(type==="res"){
-                const res=await noteApi.restoreTrash(idNote)
+            if (type === "res") {
+                const res = await noteApi.restoreTrash(idNote);
                 enqueueSnackbar(res.message, { variant: "success" });
-                const newData=[...data,res.note]
-                setData(newData)
+                const newData = [...data, res.note];
+                setData(newData);
             }
-            const newTrash=[...dataTrash]
-            const newTrashFilter=newTrash.filter((item)=>item.idNote!==idNote)
-            setDataTrash(newTrashFilter)
+            const newTrash = [...dataTrash];
+            const newTrashFilter = newTrash.filter((item) => item.idNote !== idNote);
+            setDataTrash(newTrashFilter);
         } catch (error) {
             enqueueSnackbar(error.message, { variant: "error" });
         }
+    };
+    const handleEdit=(id, newVal)=>{
+        const index=data.findIndex((item)=>item.idNote===id)
+        const newDataEdit=[...data]
+        newDataEdit[index]={...newDataEdit[index],...newVal}
+        setData(newDataEdit)
     }
     const view = !(pathname.split("/")[2] === "settings" || pathname.split("/")[2] === "calendar");
     return (
@@ -259,6 +262,7 @@ function Home(props) {
                                         isSubmitting={isSubmitting}
                                         handleNoteForm={handleNoteForm}
                                         bg={colorNote}
+                                        action='Create'
                                     />
                                 )}
                                 {type === "checklist" && (
@@ -266,6 +270,7 @@ function Home(props) {
                                         isSubmitting={isSubmitting}
                                         handleNoteForm={handleNoteForm}
                                         bg={colorNote}
+                                        action='Create'
                                     />
                                 )}
                             </Box>
@@ -281,8 +286,14 @@ function Home(props) {
                     <Routes>
                         <Route path='/' element={<Navigate to='/home/archived' />} />
                         <Route path='/calendar' element={<CalendarTable />} />
-                        <Route path='/archived' element={<Archived data={data} handleDelNote={handleDelNote} />} />
-                        <Route path='/deleted' element={<Deleted  data={dataTrash}  handleInTrash={handleInTrash}/>} />
+                        <Route
+                            path='/archived'
+                            element={<Archived data={data} setArchivedData={handleEdit} handleDelNote={handleDelNote} />}
+                        />
+                        <Route
+                            path='/deleted'
+                            element={<Deleted data={dataTrash} handleInTrash={handleInTrash} />}
+                        />
                         <Route path='/settings' element={<Settings />} />
                     </Routes>
                     <Footer />
