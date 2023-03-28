@@ -1,8 +1,7 @@
 import React from "react";
-import PropTypes from "prop-types";
 
-import { Badge, Calendar } from "antd";
 import { makeStyles } from "@mui/styles";
+import { Badge, Calendar } from "antd";
 import classNames from "classnames";
 const getListData = (value) => {
     let listData;

@@ -1,4 +1,4 @@
-import { DeleteOutline, EditOutlined, InfoOutlined, KeyboardArrowRight } from "@mui/icons-material";
+import { DeleteOutline, EditOutlined, KeyboardArrowRight } from "@mui/icons-material";
 import {
     Box,
     Button,
@@ -20,15 +20,15 @@ import {
 import { makeStyles } from "@mui/styles";
 import classNames from "classnames";
 import dayjs from "dayjs";
+import { useSnackbar } from "notistack";
 import PropTypes from "prop-types";
 import React, { useState } from "react";
+import noteApi from "../api/noteApi";
+import { convertColor } from "../constants";
 import PinnedIcon from "./CustomIcons/PinnedIcon";
 import CheckListBox from "./FieldNote/CheckListFieldBox";
 import TextFieldBox from "./FieldNote/TextFieldBox";
 import ToolsNote from "./ToolsNote";
-import { convertColor } from "../constants";
-import noteApi from "../api/noteApi";
-import { useSnackbar } from "notistack";
 
 NoteItem.propTypes = {
     dataItem: PropTypes.object.isRequired,

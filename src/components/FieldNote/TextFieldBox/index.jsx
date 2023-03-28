@@ -3,6 +3,7 @@ import { makeStyles } from "@mui/styles";
 import PropTypes from "prop-types";
 import React, { useState } from "react";
 import { convertColor } from "../../../constants";
+import { useSnackbar } from "notistack";
 
 TextFieldBox.propTypes = {
     bg: PropTypes.object.isRequired,
@@ -24,6 +25,7 @@ function TextFieldBox({ bg,handleNoteForm,isSubmitting,cx="",tt="",action }) {
     const classes = useStyles();
     const [title,setTitle]=useState(tt)
     const [content,setContent]=useState(cx)
+    const {enqueueSnackbar}=useSnackbar()
     const handleChangeContent=(e)=>{
         const val=e.target.value
         setContent(val)
@@ -33,7 +35,10 @@ function TextFieldBox({ bg,handleNoteForm,isSubmitting,cx="",tt="",action }) {
         setTitle(val)
     }
     const handleSubmit=()=>{
-        if(title.trim()===''||content.trim()=== "") return;
+        if(title.trim()===''||content.trim()=== ""){
+            enqueueSnackbar("Please fill in note!", { variant: "error" });
+            return;
+        } 
         const note={
             'title':title,
             'color':bg,

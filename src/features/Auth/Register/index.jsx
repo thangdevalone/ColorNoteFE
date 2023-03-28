@@ -4,31 +4,29 @@ import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Container from "@mui/material/Container";
-import LinearProgress from "@mui/material/LinearProgress";
 import CssBaseline from "@mui/material/CssBaseline";
-import Grid from "@mui/material/Grid";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
+import Grid from "@mui/material/Grid";
+import LinearProgress from "@mui/material/LinearProgress";
 import Link from "@mui/material/Link";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Typography from "@mui/material/Typography";
-import * as React from "react";
+import { makeStyles } from "@mui/styles";
 import { unwrapResult } from "@reduxjs/toolkit";
 import { useSnackbar } from "notistack";
-import { useDispatch } from "react-redux";
+import * as React from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
 import InputField from "../../../components/FormControls/InputField";
 import PasswordField from "../../../components/FormControls/PasswordField";
 import { register } from "../userSlice";
-import { makeStyles } from "@mui/styles";
-import { useState } from "react";
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { checkJWT } from "../../../constants";
 
 function Copyright(props) {
   return (

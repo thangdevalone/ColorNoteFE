@@ -7,7 +7,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import noteApi from "../../api/noteApi";
-import { checkJWT, colorBucket, convertColor } from "../../constants";
+import { checkJWT, colorBucket } from "../../constants";
 import Archived from "../../features/Archived";
 import CalendarTable from "../../features/Calendar";
 import Deleted from "../../features/Deleted";
@@ -18,6 +18,7 @@ import TextFieldBox from "../FieldNote/TextFieldBox";
 import Footer from "../Footer";
 import SideBar from "../SideBar";
 import ToolsNote from "../ToolsNote";
+import ReleaseDoc from "../ReleaseDoc";
 
 Home.propTypes = {};
 
@@ -161,11 +162,14 @@ function Home(props) {
         newDataEdit[index]={...newDataEdit[index],...newVal}
         setData(newDataEdit)
     }
+
+    const release=localStorage.getItem('show')==='true'?true: false
     const view = !(pathname.split("/")[2] === "settings" || pathname.split("/")[2] === "calendar");
     return (
         <div>
             {isLogin && (
                 <div className={classes.root}>
+                    {release && <ReleaseDoc/>}
                     <SideBar handleOpenDrawer={handleOpenDrawer} drawerNew={drawerNew} />
 
                     {view && (

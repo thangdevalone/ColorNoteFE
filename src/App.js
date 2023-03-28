@@ -6,6 +6,10 @@ import Register from './features/Auth/Register';
 import { checkJWT } from './constants';
 
 function App() {
+  if(localStorage.getItem('show')!=='false'){
+    localStorage.setItem('show',true)
+
+  }
 
   return (
     <div>
