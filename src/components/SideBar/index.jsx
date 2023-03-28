@@ -13,50 +13,18 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import { makeStyles } from "@mui/styles";
 import PropTypes from "prop-types";
 import React from "react";
+import classes from "./styles.module.css"
 import { useLocation, useNavigate } from "react-router-dom";
 SideBar.propTypes = {
     handleOpenDrawer: PropTypes.func.isRequired,
     drawerNew: PropTypes.bool.isRequired,
-};
-const useStyle = makeStyles(() => ({
-    sidebar: {
-        width: "250px",
-        height: "100vh",
-        background: "white",
-    },
-    nameApp: {
-        fontWeight: "800",
-        fontSize: "32px",
-        lineHeight: "60px",
-        textAlign: "center",
-        background:
-            "linear-gradient(90deg, rgba(50, 245, 117, 0.98) 0%, rgba(245, 227, 66, 0.92) 54.58%, rgba(245, 148, 241, 0.98) 105.86%)",
-        WebkitBackgroundClip: "text",
-        WebkitTextFillColor: "transparent",
-        backgroundClip: "text",
-        textFillColor: "transparent",
-    },
-    btnNew: {
-        boxShadow: "none !important",
-        borderRadius: "16px  !important",
-        background: "#4CB6F2  !important",
-        Width: "140px",
-        height: "56px",
-        fontSize: "24px !important",
-        left: "50%",
-        padding: "6px 20px !important",
-        marginTop: "10px !important",
-        justifyContent: "space-evenly",
-        transform: "translateX(-50%)",
-        textTransform: "none !important",
-    },
-}));
+}
+    
 
 function SideBar({ handleOpenDrawer, drawerNew }) {
-    const classes = useStyle();
+   
     const { pathname } = useLocation();
     const navigate = useNavigate();
     const [anchorEl, setAnchorEl] = React.useState(null);

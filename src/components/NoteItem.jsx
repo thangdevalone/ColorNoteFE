@@ -17,8 +17,6 @@ import {
     Tooltip,
     Typography,
 } from "@mui/material";
-import { makeStyles } from "@mui/styles";
-import classNames from "classnames";
 import dayjs from "dayjs";
 import { useSnackbar } from "notistack";
 import PropTypes from "prop-types";
@@ -33,86 +31,33 @@ import ToolsNote from "./ToolsNote";
 NoteItem.propTypes = {
     dataItem: PropTypes.object.isRequired,
     handleDelNote: PropTypes.func.isRequired,
-    setArchivedData:PropTypes.func.isRequired
+    setArchivedData: PropTypes.func.isRequired,
 };
 
-const useStyle = makeStyles(() => ({
-    note: {
-        position: "relative",
-        width: "100%",
-        maxWidth: "350px",
-        height: "220px",
-        borderRadius: "5px",
-        boxShadow: "rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;",
-        padding: "10px 15px",
-    },
-    title: {
-        fontWeight: 500,
-        fontSize: "24px",
-        width: "calc(100% - 80px)",
-        marginBottom: "5px",
-        display: "block",
-        cursor: "default",
-        whiteSpace: "nowrap",
-        overflow: "hidden",
-        textOverflow: "ellipsis",
-    },
-
-    boxWrap: {
-        fontWeight: 500,
-        fontSize: "14px",
-        background: "rgba(255, 255, 255, 0.160784)",
-        borderRadius: "3px",
-        display: "inline-block",
-        padding: "5px 8px",
-        position: "absolute",
-        bottom: "15px",
-    },
-    lineThrough: {
-        textDecorationLine: "line-through",
-    },
-    list: {
-        "& .MuiButtonBase-root": {
-            padding: "5px 10px!important",
-        },
-        borderLeft: "3px solid transparent   !important",
-    },
-
-    listDone: {
-        background: "rgba(9, 30, 66, 0.0588235) !important",
-        borderLeft: "3px solid #0C66E4   !important",
-        "& .MuiButtonBase-root": {
-            padding: "5px 10px!important",
-        },
-    },
-}));
-function NoteItem({ dataItem, handleDelNote ,setArchivedData}) {
-    const classes = useStyle();
+function NoteItem({ dataItem, handleDelNote, setArchivedData }) {
     const [open, setOpen] = React.useState(false);
     const [drawerEdit, setDrawerEdit] = useState(false);
     const [pinned, setPinned] = useState(dataItem.pinned);
     const [colorNote, setColorNote] = useState(dataItem.color);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const {enqueueSnackbar}=useSnackbar()
+    const { enqueueSnackbar } = useSnackbar();
     const [options, setOptions] = useState({
-        dueAt:
-            typeof dataItem.dueAt !== "object"
-                ? dayjs(dataItem.dueAt)
-                : dataItem.dueAt,
+        dueAt: typeof dataItem.dueAt !== "object" ? dayjs(dataItem.dueAt) : dataItem.dueAt,
         remindAt: dataItem.remindAt,
         lock: dataItem.lock,
         share: dataItem.share,
     });
     const handleChange = async (id) => {
-       
         try {
-            await noteApi.tick(id)
+            await noteApi.tick(id);
             const newList = dataItem.data;
             const itemIndex = dataItem.data.findIndex((item) => item.id === id);
-            newList[itemIndex] = { ...newList[itemIndex], status: !Boolean(newList[itemIndex].status) };
+            newList[itemIndex] = {
+                ...newList[itemIndex],
+                status: !Boolean(newList[itemIndex].status),
+            };
             const newData = { ...dataItem, data: newList };
             setArchivedData(newData);
-
         } catch (error) {
             enqueueSnackbar(error.message, { variant: "error" });
         }
@@ -165,17 +110,28 @@ function NoteItem({ dataItem, handleDelNote ,setArchivedData}) {
             setIsSubmitting(false);
 
             enqueueSnackbar(res.message, { variant: "success" });
-            
+
             setDrawerEdit(false);
-            setArchivedData(dataItem.idNote,res.note)
+            setArchivedData(dataItem.idNote, res.note);
         } catch (error) {
             setIsSubmitting(false);
             enqueueSnackbar(error.message, { variant: "error" });
         }
     };
-    console.log(dataItem)
+    console.log(dataItem);
     return (
-        <div className={classes.note} style={{ backgroundColor: `${convertColor(dataItem.color)}` }}>
+        <div
+            style={{
+                backgroundColor: `${convertColor(dataItem.color)}`,
+                position: "relative",
+                width: "100%",
+                maxWidth: "350px",
+                height: "220px",
+                borderRadius: "5px",
+                boxShadow: "rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;",
+                padding: "10px 15px",
+            }}
+        >
             <Drawer
                 variant='persistent'
                 className='box-container'
@@ -322,8 +278,25 @@ function NoteItem({ dataItem, handleDelNote ,setArchivedData}) {
                     <DeleteOutline />
                 </IconButton>
             </Box>
-            <Tooltip title={<span style={{ fontSize: "14px" }}>{dataItem.title}</span>} placement='top'>
-                <span className={classes.title}>{dataItem.title}</span>
+            <Tooltip
+                title={<span style={{ fontSize: "14px" }}>{dataItem.title}</span>}
+                placement='top'
+            >
+                <span
+                    style={{
+                        fontWeight: 500,
+                        fontSize: "24px",
+                        width: "calc(100% - 80px)",
+                        marginBottom: "5px",
+                        display: "block",
+                        cursor: "default",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                    }}
+                >
+                    {dataItem.title}
+                </span>
             </Tooltip>
 
             {dataItem.pinned ? (
@@ -357,10 +330,20 @@ function NoteItem({ dataItem, handleDelNote ,setArchivedData}) {
 
                             return (
                                 <ListItem
-                                    className={classNames({
-                                        [classes.list]: true,
-                                        [classes.listDone]: item.status,
-                                    })}
+                                    sx={{
+                                        "& .MuiButtonBase-root": {
+                                            padding: "5px 10px!important",
+                                        },
+                                        pointerEvents: "none",
+                                        borderLeft: `3px solid ${
+                                            item.status ? "#0C66E4" : "transparent"
+                                        }   !important}`,
+                                        background: `${
+                                            item.status
+                                                ? "rgba(9, 30, 66, 0.0588235) !important"
+                                                : "trasparent"
+                                        }`,
+                                    }}
                                     key={item.id}
                                     disablePadding
                                 >
@@ -384,9 +367,7 @@ function NoteItem({ dataItem, handleDelNote ,setArchivedData}) {
                                             sx={{ wordWrap: "break-word" }}
                                             primary={
                                                 <span
-                                                    className={classNames({
-                                                        [classes.lineThrough]: item.status,
-                                                    })}
+                                                    style={{textDecoration:`${item.status?"line-through":"none"}`}}
                                                 >
                                                     {item.content}
                                                 </span>
@@ -399,7 +380,18 @@ function NoteItem({ dataItem, handleDelNote ,setArchivedData}) {
                     </div>
                 )}
             </>
-            <div className={classes.boxWrap}>
+            <div
+                style={{
+                    fontWeight: 500,
+                    fontSize: "14px",
+                    background: "rgba(255, 255, 255, 0.160784)",
+                    borderRadius: "3px",
+                    display: "inline-block",
+                    padding: "5px 8px",
+                    position: "absolute",
+                    bottom: "15px",
+                }}
+            >
                 Due at: {dayjs(dataItem.dueAt).format("DD/MM/YYYY hh:mm A")}
             </div>
         </div>

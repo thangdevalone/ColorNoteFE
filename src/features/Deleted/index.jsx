@@ -1,12 +1,11 @@
 import { Grid } from "@mui/material";
-import { makeStyles } from "@mui/styles";
 import classNames from "classnames";
 import PropTypes from "prop-types";
 import React from "react";
 import SearchInput from "../../components/SearchInput";
 
 import NoteItemDel from "../../components/NoteItemDel";
-
+import classes from "./styles.module.css";
 Deleted.propTypes = {
    
 };
@@ -15,37 +14,8 @@ Deleted.defaultProps = {
     data:PropTypes.array.isRequired,
 };
 
-const useStyle = makeStyles(() => ({
-    root: {
-        width: "calc(100vw - 250px)",
-        height: "calc(100vh - 64px)",
-        position: "absolute",
-        top: 0,
-        right: 0,
-        zIndex: 10,
-    },
-    feature: {
-        width: "100%",
-        padding: "0 20px",
-        height: "calc(100% - 50px)",
-        overflow: "hidden auto",
-    },
-    headerFeature: {
-        width: "100%",
-        height: "50px",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "flex-end",
-    },
-    grid: {
-        margin: "0 !important",
-        width: "100% !important",
-    },
-}));
-function Deleted({handleInTrash,data}) {
-    const classes = useStyle();
 
-        
+function Deleted({handleInTrash,data}) {
     return (
         <div className={classes.root}>
             <div className={classes.headerFeature}>

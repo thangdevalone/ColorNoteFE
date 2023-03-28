@@ -1,37 +1,38 @@
+import { Box, Typography } from "@mui/material";
 import React from "react";
-import PropTypes from "prop-types";
-import { makeStyles } from "@mui/styles";
-import { Typography } from "@mui/material";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 Footer.propTypes = {};
-const useStyle = makeStyles(() => ({
-    footer: {
-        position: "absolute",
-        bottom: 0,
-        background: "white",
-        height: "64px",
-        width: "calc(100vw - 251px)",
-        right: 0,
-        textAlign: "center",
-        padding: "8px",
-    },
-    flexBoxCenter: {
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        marginTop: "5px",
-    },
-}));
+
 function Footer(props) {
-    const nav = useNavigate();
-    const classes = useStyle();
     return (
-        <div className={classes.footer}>
-            <Typography variant='caption' display='block' style={{ color: "#44546F" ,cursor:"pointer"}}>
+        <div
+            style={{
+                position: "absolute",
+                bottom: 0,
+                background: "white",
+                height: "64px",
+                width: "calc(100vw - 251px)",
+                right: 0,
+                textAlign: "center",
+                padding: "8px",
+            }}
+        >
+            <Typography
+                variant='caption'
+                display='block'
+                style={{ color: "#44546F", cursor: "pointer" }}
+            >
                 <Link to='https://thinkdiff.us/'>Copyright ThinkDiff</Link>
             </Typography>
-            <div className={classes.flexBoxCenter}>
+            <Box
+                sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginTop: "5px",
+                }}
+            >
                 <Typography
                     variant='caption'
                     display='block'
@@ -58,7 +59,7 @@ function Footer(props) {
                 >
                     Learn more
                 </Typography>
-            </div>
+            </Box>
         </div>
     );
 }

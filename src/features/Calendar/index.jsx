@@ -1,8 +1,7 @@
 import React from "react";
 
-import { makeStyles } from "@mui/styles";
+import { Box } from "@mui/material";
 import { Badge, Calendar } from "antd";
-import classNames from "classnames";
 const getListData = (value) => {
     let listData;
     switch (value.date()) {
@@ -66,23 +65,7 @@ const getListData = (value) => {
     }
     return listData || [];
 };
-const useStyle = makeStyles(() => ({
-    root: {
-        width: "calc(100vw - 251px)",
-        height: "calc(100vh - 65px)",
-        position: "absolute",
-        top: 0,
-        right: 0,
-        padding:"10px",
-        background:"white",
-        borderLeft:"1px solid #fcfcfc",
-        overflow:"hidden auto",
-        zIndex: 10,
-        "& *:not(.basic-text)":{
-            fontWeight:"600 !important"
-        }
-    },
-}));
+
 const getMonthData = (value) => {
     if (value.month() === 8) {
         return 1394;
@@ -90,7 +73,6 @@ const getMonthData = (value) => {
 };
 
 function CalendarTable(props) {
-    const classes=useStyle()
     const monthCellRender = (value) => {
         const num = getMonthData(value);
         return num ? (
@@ -113,12 +95,26 @@ function CalendarTable(props) {
         );
     };
     return (
-        <div className={classNames({
-            [classes.root]:true,
-            "box-container":true
-        })}>
-            <Calendar  dateCellRender={dateCellRender} monthCellRender={monthCellRender} />
-        </div>
+        <Box
+            className='box-container'
+            sx={{
+                width: "calc(100vw - 251px)",
+                height: "calc(100vh - 65px)",
+                position: "absolute",
+                top: 0,
+                right: 0,
+                padding: "10px",
+                background: "white",
+                borderLeft: "1px solid #fcfcfc",
+                overflow: "hidden auto",
+                zIndex: 10,
+                "& *:not(.basic-text)": {
+                    fontWeight: "600 !important",
+                },
+            }}
+        >
+            <Calendar dateCellRender={dateCellRender} monthCellRender={monthCellRender} />
+        </Box>
     );
 }
 

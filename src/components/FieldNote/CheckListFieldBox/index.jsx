@@ -8,7 +8,6 @@ import {
     ListItemIcon,
     TextField,
 } from "@mui/material";
-import { makeStyles } from "@mui/styles";
 import PropTypes from "prop-types";
 import React, { useState } from "react";
 
@@ -24,19 +23,12 @@ CheckListBox.propTypes = {
     list: PropTypes.array,
 };
 CheckListBox.defaultProps = {};
-const useStyles = makeStyles(() => ({
-    noteForm: {
-        width: "100%",
-        minHeight: "200px",
-    },
-    noteContent: {},
-}));
+
 function CheckListBox({ bg, handleNoteForm, action, tt = "", list = [] }) {
-    const classes = useStyles();
     const [title, setTitle] = useState(tt);
     const { enqueueSnackbar } = useSnackbar();
     const [listCheckbox, setListCheckbox] = useState(
-        list.map((item) => ({ ...item, status: !!item.status,id:item.id }))
+        list.map((item) => ({ ...item, status: !!item.status, id: item.id }))
     );
     const handleChangeTitle = (e) => {
         const val = e.target.value;
@@ -57,11 +49,11 @@ function CheckListBox({ bg, handleNoteForm, action, tt = "", list = [] }) {
             type: "text",
             data: listCheckbox.map((item) => ({ content: item.content, status: item.status })),
         };
-        if(action==='Create'){
+        if (action === "Create") {
             setListCheckbox([]);
             setTitle("");
         }
-        
+
         handleNoteForm(note);
     };
     const handleToggle = (id) => () => {
@@ -92,7 +84,6 @@ function CheckListBox({ bg, handleNoteForm, action, tt = "", list = [] }) {
     };
     return (
         <Box
-            className={classes.noteForm}
             sx={{
                 backgroundColor: `${convertColor(bg)}`,
                 padding: "7px",
@@ -100,6 +91,9 @@ function CheckListBox({ bg, handleNoteForm, action, tt = "", list = [] }) {
                 boxShadow:
                     " 0px 0px 1px rgba(3, 4, 4, 0.5), 0px 8px 12px rgba(3, 4, 4, 0.36), inset 0px 0px 0px 1px rgba(188, 214, 240, 0.04)",
                 marginTop: "10px",
+
+                width: "100%",
+                minHeight: "200px",
             }}
         >
             <Box className='note-title'>

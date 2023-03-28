@@ -1,0 +1,21 @@
+.root {
+    width: calc(100vw - 250px);
+    height: calc(100vh - 64px);
+    position: absolute;
+    overflow: hidden auto;
+    top: 0;
+    right: 0;
+    z-index: 10;
+}
+.grid {
+    margin: 0 !important;
+    width: 100% !important;
+    padding: 20px !important;
+}
+.mainText {
+    color: #6A53CC;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    display: inline-block;
+}

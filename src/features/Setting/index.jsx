@@ -1,5 +1,4 @@
 import { Box, Button, Divider, FormControl, Grid, MenuItem, Select } from "@mui/material";
-import { makeStyles } from "@mui/styles";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import BoxDoubleContent from "../../components/BoxDoubleContent";
@@ -10,31 +9,10 @@ import { useNavigate } from "react-router-dom";
 import CheckIcon from "../../components/CustomIcons/CheckIcon";
 import { colorBucket, convertColor } from "../../constants";
 import { logOut } from "../Auth/userSlice";
+import classes from './styles.module.css'
 
 Settings.propTypes = {};
-const useStyle = makeStyles(() => ({
-    root: {
-        width: "calc(100vw - 250px)",
-        height: "calc(100vh - 64px)",
-        position: "absolute",
-        overflow: "hidden auto",
-        top: 0,
-        right: 0,
-        zIndex: 10,
-    },
-    grid: {
-        margin: "0 !important",
-        width: "100% !important",
-        padding: "20px !important",
-    },
-    mainText: {
-        color: "#6A53CC",
-        fontSize: "22px",
-        fontWeight: "700",
-        marginBottom: "20px",
-        display: "inline-block",
-    },
-}));
+
 const configColorBox = {
     width: "30px",
     height: "30px",
@@ -43,7 +21,6 @@ const configColorBox = {
     border: "1px solid black",
 };
 function Settings(props) {
-    const classes = useStyle();
     const navigate = useNavigate();
     const user =
         useSelector((state) => state.user.current) || JSON.parse(localStorage.getItem("user"));
@@ -54,7 +31,7 @@ function Settings(props) {
     const handleLogOut = async () => {
         const action = logOut();
 
-        const resultAction = await dispatch(action);
+        await dispatch(action);
         navigate("/login");
     };
     const CustomMenuScreen = () => (

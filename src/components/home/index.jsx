@@ -1,6 +1,5 @@
 import { KeyboardArrowRight } from "@mui/icons-material";
 import { Box, Drawer, IconButton, LinearProgress } from "@mui/material";
-import { makeStyles } from "@mui/styles";
 import dayjs from "dayjs";
 import { useSnackbar } from "notistack";
 import React, { useEffect, useState } from "react";
@@ -16,23 +15,13 @@ import PinnedIcon from "../CustomIcons/PinnedIcon";
 import CheckListBox from "../FieldNote/CheckListFieldBox";
 import TextFieldBox from "../FieldNote/TextFieldBox";
 import Footer from "../Footer";
+import ReleaseDoc from "../ReleaseDoc";
 import SideBar from "../SideBar";
 import ToolsNote from "../ToolsNote";
-import ReleaseDoc from "../ReleaseDoc";
 
 Home.propTypes = {};
 
-const useStyle = makeStyles(() => ({
-    root: {
-        width: "100vw",
-        height: "100vh",
-        backgroundImage: "linear-gradient(to right,#D0FADE, rgba(255, 134, 250, 0.2))",
-        overflow: "hidden",
-    },
-}));
-
 function Home(props) {
-    const classes = useStyle();
     const { enqueueSnackbar } = useSnackbar();
     const user =
         useSelector((state) => state.user.current) || JSON.parse(localStorage.getItem("user"));
@@ -156,20 +145,28 @@ function Home(props) {
             enqueueSnackbar(error.message, { variant: "error" });
         }
     };
-    const handleEdit=(id, newVal)=>{
-        const index=data.findIndex((item)=>item.idNote===id)
-        const newDataEdit=[...data]
-        newDataEdit[index]={...newDataEdit[index],...newVal}
-        setData(newDataEdit)
-    }
+    const handleEdit = (id, newVal) => {
+        const index = data.findIndex((item) => item.idNote === id);
+        const newDataEdit = [...data];
+        newDataEdit[index] = { ...newDataEdit[index], ...newVal };
+        setData(newDataEdit);
+    };
 
-    const release=localStorage.getItem('show')==='true'?true: false
+    const release = localStorage.getItem("show") === "true" ? true : false;
     const view = !(pathname.split("/")[2] === "settings" || pathname.split("/")[2] === "calendar");
     return (
         <div>
             {isLogin && (
-                <div className={classes.root}>
-                    {release && <ReleaseDoc/>}
+                <div
+                    style={{
+                        width: "100vw",
+                        height: "100vh",
+                        backgroundImage:
+                            "linear-gradient(to right,#D0FADE, rgba(255, 134, 250, 0.2))",
+                        overflow: "hidden",
+                    }}
+                >
+                    {release && <ReleaseDoc />}
                     <SideBar handleOpenDrawer={handleOpenDrawer} drawerNew={drawerNew} />
 
                     {view && (
@@ -292,7 +289,13 @@ function Home(props) {
                         <Route path='/calendar' element={<CalendarTable />} />
                         <Route
                             path='/archived'
-                            element={<Archived data={data} setArchivedData={handleEdit} handleDelNote={handleDelNote} />}
+                            element={
+                                <Archived
+                                    data={data}
+                                    setArchivedData={handleEdit}
+                                    handleDelNote={handleDelNote}
+                                />
+                            }
                         />
                         <Route
                             path='/deleted'
