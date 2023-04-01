@@ -53,7 +53,7 @@ function Home(props) {
             setIsLogin(true);
             (async () => {
                 try {
-                    const response1 = await noteApi.getNotes(1);
+                    const response1 = await noteApi.getNotes(user.id);
                     setData(response1.notes || []);
                     const response2 = await noteApi.getTrash(user.id);
                     setDataTrash(response2.notes || []);

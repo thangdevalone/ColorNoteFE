@@ -128,7 +128,7 @@ function NoteItem({ dataItem, handleDelNote, setArchivedData }) {
                 maxWidth: "350px",
                 height: "220px",
                 borderRadius: "5px",
-                boxShadow: "rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;",
+                boxShadow: "rgba(0, 0, 0, 0.05) 0px 0px 0px 1px",
                 padding: "10px 15px",
             }}
         >
