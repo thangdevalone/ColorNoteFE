@@ -39,6 +39,11 @@ const userSlice = createSlice({
 
         // set state
         state.current={}
+      },
+      Update(state,action){
+        const clone={...state.current,...action.payload}
+        localStorage.setItem(StorageKeys.USER, JSON.stringify(clone));
+        state.current=clone
       }
     },
     extraReducers:builder=>{
@@ -54,5 +59,5 @@ const userSlice = createSlice({
 });
 
 const {actions,reducer} =userSlice
-export const {logOut}=actions
+export const {logOut,Update}=actions
 export default reducer; 

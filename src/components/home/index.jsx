@@ -26,7 +26,8 @@ function Home(props) {
     const user =
         useSelector((state) => state.user.current) || JSON.parse(localStorage.getItem("user"));
     const [isLogin, setIsLogin] = useState(false);
-    const [colorNote, setColorNote] = useState(colorBucket.color_1);
+    const [colorNote, setColorNote] = useState(user.df_color);
+    const [df_nav,setDf_nav]=useState(user.df_screen);
     const { pathname } = useLocation();
     const [drawerNew, setDrawerNew] = useState(false);
     const [type, setType] = useState("");
@@ -37,7 +38,7 @@ function Home(props) {
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const [options, setOptions] = useState({
-        dueAt: dayjs(),
+        dueAt: null,
         remindAt: null,
         lock: null,
         share: null,
@@ -65,7 +66,8 @@ function Home(props) {
     const handleOpenDrawer = (param) => {
         setType(param);
         setDrawerNew(true);
-        setOptions({ ...options, dueAt: dayjs() });
+        setOptions({ ...options, dueAt:null,remindAt:null,lock:null  });
+        setColorNote(user.df_color)
     };
     const handleDelNote = async (idNote, type) => {
         try {
@@ -92,18 +94,23 @@ function Home(props) {
         const configOptions = {
             ...options,
             dueAt:
-                typeof options.dueAt === "object"
+                typeof options.dueAt === "object" && options.dueAt
                     ? dayjs(options.dueAt).format("DD/MM/YYYY hh:mm A Z")
                     : options.dueAt,
+            remindAt:
+            typeof options.remindAt === "object" && options.remindAt
+                ? dayjs(options.remindAt).format("DD/MM/YYYY hh:mm A Z")
+                : options.remindAt,
         };
+        console.log(configOptions)
+
         const configParam = {
             ...value,
             ...configOptions,
             pinned: pinned,
             type: type,
         };
-        console.log(configParam);
-
+        
         try {
             setIsSubmitting(true);
             const res = await noteApi.createNote(user.id, configParam);
@@ -124,6 +131,7 @@ function Home(props) {
         setColorNote(color);
     };
     const handleOptionsNote = (param) => {
+        
         setOptions({ ...options, ...param });
     };
     const handleInTrash = async (idNote, type) => {
@@ -151,7 +159,7 @@ function Home(props) {
         newDataEdit[index] = { ...newDataEdit[index], ...newVal };
         setData(newDataEdit);
     };
-
+    console.log(colorNote)
     const release = localStorage.getItem("show") === "true" ? true : false;
     const view = !(pathname.split("/")[2] === "settings" || pathname.split("/")[2] === "calendar");
     return (
@@ -165,6 +173,7 @@ function Home(props) {
                             "linear-gradient(to right,#D0FADE, rgba(255, 134, 250, 0.2))",
                         overflow: "hidden",
                     }}
+                    className={'df_size'}
                 >
                     {release && <ReleaseDoc />}
                     <SideBar handleOpenDrawer={handleOpenDrawer} drawerNew={drawerNew} />
@@ -285,8 +294,8 @@ function Home(props) {
                         </Box>
                     </Drawer>
                     <Routes>
-                        <Route path='/' element={<Navigate to='/home/archived' />} />
-                        <Route path='/calendar' element={<CalendarTable />} />
+                        <Route path='/' element={<Navigate to={`/home/${df_nav.toLowerCase()}`} />} />
+                        <Route path='/calendar' element={<CalendarTable  data={data} />} />
                         <Route
                             path='/archived'
                             element={
@@ -301,7 +310,7 @@ function Home(props) {
                             path='/deleted'
                             element={<Deleted data={dataTrash} handleInTrash={handleInTrash} />}
                         />
-                        <Route path='/settings' element={<Settings />} />
+                        <Route path='/settings' element={<Settings setDf_nav={setDf_nav} />} />
                     </Routes>
                     <Footer />
                 </div>

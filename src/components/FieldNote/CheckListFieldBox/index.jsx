@@ -9,7 +9,7 @@ import {
     TextField,
 } from "@mui/material";
 import PropTypes from "prop-types";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { Add, Close } from "@mui/icons-material";
 import { useSnackbar } from "notistack";
@@ -24,12 +24,13 @@ CheckListBox.propTypes = {
 };
 CheckListBox.defaultProps = {};
 
-function CheckListBox({ bg, handleNoteForm, action, tt = "", list = [] }) {
+function CheckListBox({ bg, handleNoteForm, action, tt = "", list = null }) {
     const [title, setTitle] = useState(tt);
     const { enqueueSnackbar } = useSnackbar();
-    const [listCheckbox, setListCheckbox] = useState(
-        list.map((item) => ({ ...item, status: !!item.status, id: item.id }))
-    );
+    const [listCheckbox, setListCheckbox] = useState([]);
+    useEffect(() => {
+        if (list) setListCheckbox([...list]);
+    }, [list]);
     const handleChangeTitle = (e) => {
         const val = e.target.value;
         setTitle(val);

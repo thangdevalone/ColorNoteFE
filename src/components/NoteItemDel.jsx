@@ -173,9 +173,11 @@ function NoteItemDel({ dataItem, handleInTrash }) {
                     padding: "5px 8px",
                     position: "absolute",
                     bottom: "15px",
+
+                    marginRight:'15px'
                 }}
             >
-                Due at: {dayjs(data.dueAt).format("DD/MM/YYYY hh:mm A")}
+                Create at: {dayjs(data.createAt).format("DD/MM/YYYY hh:mm A")}
             </div>
         </div>
     );

@@ -7,11 +7,14 @@ import { LoginOutlined } from "@mui/icons-material";
 import classNames from "classnames";
 import { useNavigate } from "react-router-dom";
 import CheckIcon from "../../components/CustomIcons/CheckIcon";
-import { colorBucket, convertColor } from "../../constants";
-import { logOut } from "../Auth/userSlice";
-import classes from './styles.module.css'
-
-Settings.propTypes = {};
+import { colorBucket } from "../../constants";
+import { Update, logOut } from "../Auth/userSlice";
+import classes from "./styles.module.css";
+import userApi from "../../api/userApi";
+import PropTypes from "prop-types"
+Settings.propTypes = {
+    setDf_nav:PropTypes.func.isRequired,
+};
 
 const configColorBox = {
     width: "30px",
@@ -20,13 +23,32 @@ const configColorBox = {
     margin: "0 auto",
     border: "1px solid black",
 };
-function Settings(props) {
+function diff(color, otherColor) {
+    if (color.r !== otherColor.r) {
+        return false;
+    }
+    if (color.g !== otherColor.g) {
+        return false;
+    }
+    if (color.b !== otherColor.b) {
+        return false;
+    }
+    return true;
+}
+
+function Settings({setDf_nav}) {
     const navigate = useNavigate();
+
     const user =
         useSelector((state) => state.user.current) || JSON.parse(localStorage.getItem("user"));
-    const [screen, setScreen] = useState("archived");
-    const [color, setColor] = useState(convertColor(colorBucket.color_1));
-    const [fontSize, setFontSize] = useState("default");
+    const [screen, setScreen] = useState(user.df_screen);
+    const [color, setColor] = useState(() => {
+        for (const key in colorBucket) {
+            if (diff(colorBucket[key], user.df_color)) {
+                return key;
+            }
+        }
+    });
     const dispatch = useDispatch();
     const handleLogOut = async () => {
         const action = logOut();
@@ -36,7 +58,12 @@ function Settings(props) {
     };
     const CustomMenuScreen = () => (
         <FormControl className='stand-select' variant='standard' sx={{ m: 1, minWidth: 80 }}>
-            <Select id='screen-select' value={screen} onChange={handleChangeScreen} autoWidth>
+            <Select
+                id='screen-select'
+                value={screen.toLowerCase()}
+                onChange={handleChangeScreen}
+                autoWidth
+            >
                 <MenuItem value={"calendar"}>Calendar</MenuItem>
                 <MenuItem value={"archived"}>Archived</MenuItem>
                 <MenuItem value={"deleted"}>Deleted</MenuItem>
@@ -44,57 +71,57 @@ function Settings(props) {
             </Select>
         </FormControl>
     );
-    const CustomMenuFontSize = () => (
-        <FormControl className='stand-select' variant='standard' sx={{ m: 1, minWidth: 80 }}>
-            <Select id='screen-select' value={fontSize} onChange={handleChangeFontSize} autoWidth>
-                <MenuItem value={"small"}>Small</MenuItem>
-                <MenuItem value={"default"}>Default</MenuItem>
-                <MenuItem value={"large"}>Large</MenuItem>
-            </Select>
-        </FormControl>
-    );
+
     const CustomMenuColor = () => (
         <FormControl className='stand-select' variant='standard' sx={{ m: 1, minWidth: 80 }}>
             <Select id='color-select' value={color} onChange={handleChangeColor} autoWidth>
-                <MenuItem value={convertColor(colorBucket.color_1)}>
+                <MenuItem value={"color_1"}>
                     <ColorBox color={colorBucket.color_1} sx={configColorBox} />
                 </MenuItem>
-                <MenuItem value={convertColor(colorBucket.color_2)}>
+                <MenuItem value={"color_2"}>
                     <ColorBox color={colorBucket.color_2} sx={configColorBox} />
                 </MenuItem>
-                <MenuItem value={convertColor(colorBucket.color_3)}>
+                <MenuItem value={"color_3"}>
                     <ColorBox color={colorBucket.color_3} sx={configColorBox} />
                 </MenuItem>
-                <MenuItem value={convertColor(colorBucket.color_4)}>
+                <MenuItem value={"color_4"}>
                     <ColorBox color={colorBucket.color_4} sx={configColorBox} />
                 </MenuItem>
-                <MenuItem value={convertColor(colorBucket.color_5)}>
+                <MenuItem value={"color_5"}>
                     <ColorBox color={colorBucket.color_5} sx={configColorBox} />
                 </MenuItem>
-                <MenuItem value={convertColor(colorBucket.color_6)}>
+                <MenuItem value={"color_6"}>
                     <ColorBox color={colorBucket.color_6} sx={configColorBox} />
                 </MenuItem>
-                <MenuItem value={convertColor(colorBucket.color_7)}>
+                <MenuItem value={"color_7"}>
                     <ColorBox color={colorBucket.color_7} sx={configColorBox} />
                 </MenuItem>
-                <MenuItem value={convertColor(colorBucket.color_8)}>
+                <MenuItem value={"color_8"}>
                     <ColorBox color={colorBucket.color_8} sx={configColorBox} />
                 </MenuItem>
             </Select>
         </FormControl>
     );
 
-    const handleChangeScreen = (e) => {
-        console.log(e.target.value);
+    const handleChangeScreen = async (e) => {
         setScreen(e.target.value);
+        try {
+            await userApi.update({ screen: e.target.value }, user.id);
+            dispatch(Update({ screen: e.target.value }));
+            setDf_nav(e.target.value)
+        } catch (error) {
+            console.log(error);
+        }
     };
-    const handleChangeColor = (e) => {
-        console.log(e.target.value);
+    const handleChangeColor = async (e) => {
         setColor(e.target.value);
-    };
-    const handleChangeFontSize = (e) => {
-        console.log(e.target.value);
-        setFontSize(e.target.value);
+        try {
+            await userApi.update({ color: colorBucket[e.target.value] }, user.id);
+            dispatch(Update({ screen: e.target.value }));
+        
+        } catch (error) {
+            console.log(error);
+        }
     };
     return (
         <div
@@ -152,11 +179,6 @@ function Settings(props) {
                         <BoxDoubleContent
                             content_1={<span style={{ fontWeight: 600 }}>Default color:</span>}
                             content_2={<CustomMenuColor />}
-                            customHeight='40px'
-                        />
-                        <BoxDoubleContent
-                            content_1={<span style={{ fontWeight: 600 }}>Default font size:</span>}
-                            content_2={<CustomMenuFontSize />}
                             customHeight='40px'
                         />
                     </Box>

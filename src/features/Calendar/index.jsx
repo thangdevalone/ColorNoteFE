@@ -2,93 +2,76 @@ import React from "react";
 
 import { Box } from "@mui/material";
 import { Badge, Calendar } from "antd";
-const getListData = (value) => {
-    let listData;
-    switch (value.date()) {
-        case 8:
-            listData = [
-                {
-                    type: "warning",
-                    content: "This is warning event.",
-                },
-                {
-                    type: "success",
-                    content: "This is usual event.",
-                },
-            ];
-            break;
-        case 10:
-            listData = [
-                {
-                    type: "warning",
-                    content: "This is warning event.",
-                },
-                {
-                    type: "success",
-                    content: "This is usual event.",
-                },
-                {
-                    type: "error",
-                    content: "This is error event.",
-                },
-            ];
-            break;
-        case 15:
-            listData = [
-                {
-                    type: "warning",
-                    content: "This is warning event",
-                },
-                {
-                    type: "success",
-                    content: "This is very long usual event。。....",
-                },
-                {
-                    type: "error",
-                    content: "This is error event 1.",
-                },
-                {
-                    type: "error",
-                    content: "This is error event 2.",
-                },
-                {
-                    type: "error",
-                    content: "This is error event 3.",
-                },
-                {
-                    type: "error",
-                    content: "This is error event 4.",
-                },
-            ];
-            break;
-        default:
-    }
-    return listData || [];
+import PropTypes from "prop-types";
+import dayjs from "dayjs";
+import { convertColor } from "../../constants";
+Calendar.propTypes = {
+    data: PropTypes.array,
+};
+Calendar.defaultProps = {
+    data: [],
+};
+const getListData = (value, data) => {
+    const rs = [];
+    data.forEach((ele) => {
+        if (dayjs(value).format("DD/MM/YYYY") === dayjs(ele.createAt).format("DD/MM/YYYY")) {
+            rs.push({ color: convertColor(ele.color), content: ele.title });
+        }
+    });
+    return rs;
 };
 
-const getMonthData = (value) => {
-    if (value.month() === 8) {
-        return 1394;
-    }
+const getMonthData = (value, data) => {
+    let count = 0;
+    data.forEach((ele) => {
+        if (dayjs(value).format("MM/YYYY") === dayjs(ele.createAt).format("MM/YYYY")) {
+            count++;
+        }
+    });
+    return (
+        count !== 0 && {
+            node: (
+                <Badge
+                    className='site-badge-count-109'
+                    count={count ? 109 : 0}
+                    style={{
+                        backgroundColor: "transparent",
+                        marginRight: "7px",
+                    }}
+                />
+            ),
+            count: count,
+        }
+    );
 };
 
-function CalendarTable(props) {
+function CalendarTable({ data }) {
     const monthCellRender = (value) => {
-        const num = getMonthData(value);
+        const num = getMonthData(value, data);
         return num ? (
-            <div className='notes-month'>
-                <section>{num}</section>
-                <span>Backlog number</span>
+            <div
+                style={{
+                    color: "white",
+                    background: "#52c41a",
+                    padding: "5px 10px 5px 8px",
+                    borderRadius: "15px",
+                    display: "inline-flex",
+                    alignItems: "center",
+                }}
+                color='white'
+            >
+                {num.node} {num.count > 1 ? "Notes was created" : "Note was created"}
             </div>
         ) : null;
     };
     const dateCellRender = (value) => {
-        const listData = getListData(value);
+        const listData = getListData(value, data);
+
         return (
             <ul className='events'>
                 {listData.map((item) => (
                     <li key={item.content}>
-                        <Badge status={item.type} text={item.content} />
+                        <Badge color={item.color} text={item.content} />
                     </li>
                 ))}
             </ul>

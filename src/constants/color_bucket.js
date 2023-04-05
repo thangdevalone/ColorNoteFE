@@ -37,8 +37,8 @@ export const colorBucket={
     },
     color_7:{
         r:130,
-        g:239,
-        b:187,
+        g:200,
+        b:239,
         a:1,
     },
     color_8:{

@@ -10,6 +10,10 @@ const userApi = {
     login(data){
         const url='/login'
         return axiosClient.post(url,data)
+    },
+    update(data,id){
+        const url='/user/'+id
+        return axiosClient.patch(url,data)
     }
     
 }

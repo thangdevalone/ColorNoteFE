@@ -34,16 +34,27 @@ NoteItem.propTypes = {
     setArchivedData: PropTypes.func.isRequired,
 };
 
+function getList(list, type) {
+    if (type === "text") {
+        return list;
+    }
+    if (type === "checklist") {
+        return list.map((item) => ({ ...item, status: !!item.status, id: item.id }));
+    }
+}
 function NoteItem({ dataItem, handleDelNote, setArchivedData }) {
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = useState(false);
     const [drawerEdit, setDrawerEdit] = useState(false);
     const [pinned, setPinned] = useState(dataItem.pinned);
+    const [data, setData] = useState(getList(dataItem.data, dataItem.type));
     const [colorNote, setColorNote] = useState(dataItem.color);
+
     const [isSubmitting, setIsSubmitting] = useState(false);
     const { enqueueSnackbar } = useSnackbar();
     const [options, setOptions] = useState({
         dueAt: typeof dataItem.dueAt !== "object" ? dayjs(dataItem.dueAt) : dataItem.dueAt,
-        remindAt: dataItem.remindAt,
+        remindAt:
+            typeof dataItem.remindAt !== "object" ? dayjs(dataItem.remindAt) : dataItem.remindAt,
         lock: dataItem.lock,
         share: dataItem.share,
     });
@@ -58,6 +69,8 @@ function NoteItem({ dataItem, handleDelNote, setArchivedData }) {
             };
             const newData = { ...dataItem, data: newList };
             setArchivedData(newData);
+            const newListBox = getList(newList, "checklist");
+            setData([...newListBox]);
         } catch (error) {
             enqueueSnackbar(error.message, { variant: "error" });
         }
@@ -93,9 +106,13 @@ function NoteItem({ dataItem, handleDelNote, setArchivedData }) {
         const configOptions = {
             ...options,
             dueAt:
-                typeof options.dueAt === "object"
+                typeof options.dueAt === "object" && options.dueAt
                     ? dayjs(options.dueAt).format("DD/MM/YYYY hh:mm A Z")
                     : options.dueAt,
+            remindAt:
+                typeof options.remindAt === "object" && options.remindAt
+                    ? dayjs(options.remindAt).format("DD/MM/YYYY hh:mm A Z")
+                    : options.remindAt,
         };
         const configParam = {
             ...value,
@@ -118,7 +135,6 @@ function NoteItem({ dataItem, handleDelNote, setArchivedData }) {
             enqueueSnackbar(error.message, { variant: "error" });
         }
     };
-    console.log(dataItem);
     return (
         <div
             style={{
@@ -226,7 +242,7 @@ function NoteItem({ dataItem, handleDelNote, setArchivedData }) {
                                 handleNoteForm={handleNoteForm}
                                 bg={colorNote}
                                 action='Edit'
-                                list={dataItem.data}
+                                list={data}
                                 tt={dataItem.title}
                             />
                         )}
@@ -334,14 +350,13 @@ function NoteItem({ dataItem, handleDelNote, setArchivedData }) {
                                         "& .MuiButtonBase-root": {
                                             padding: "5px 10px!important",
                                         },
-                                        pointerEvents: "none",
                                         borderLeft: `3px solid ${
                                             item.status ? "#0C66E4" : "transparent"
-                                        }   !important}`,
-                                        background: `${
+                                        }`,
+                                        backgroundColor: `${
                                             item.status
                                                 ? "rgba(9, 30, 66, 0.0588235) !important"
-                                                : "trasparent"
+                                                : "transparent"
                                         }`,
                                     }}
                                     key={item.id}
@@ -367,7 +382,11 @@ function NoteItem({ dataItem, handleDelNote, setArchivedData }) {
                                             sx={{ wordWrap: "break-word" }}
                                             primary={
                                                 <span
-                                                    style={{textDecoration:`${item.status?"line-through":"none"}`}}
+                                                    style={{
+                                                        textDecoration: `${
+                                                            item.status ? "line-through" : "none"
+                                                        }`,
+                                                    }}
                                                 >
                                                     {item.content}
                                                 </span>
@@ -390,9 +409,10 @@ function NoteItem({ dataItem, handleDelNote, setArchivedData }) {
                     padding: "5px 8px",
                     position: "absolute",
                     bottom: "15px",
+                    marginRight: "15px",
                 }}
             >
-                Due at: {dayjs(dataItem.dueAt).format("DD/MM/YYYY hh:mm A")}
+                Create at: {dayjs(dataItem.createAt).format("DD/MM/YYYY hh:mm A")}
             </div>
         </div>
     );
