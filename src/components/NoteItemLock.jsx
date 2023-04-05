@@ -1,10 +1,10 @@
-import React from "react";
-import PropTypes from "prop-types";
+import { RemoveCircleOutline } from "@mui/icons-material";
 import { Box, Button, IconButton, Tooltip } from "@mui/material";
-import { RemoveCircleOutline, RestoreOutlined } from "@mui/icons-material";
+import dayjs from "dayjs";
+import PropTypes from "prop-types";
+import React from "react";
 import { convertColor } from "../constants";
 import PinnedIcon from "./CustomIcons/PinnedIcon";
-import dayjs from "dayjs";
 
 NoteItemLock.propTypes = {
     dataItem: PropTypes.object.isRequired,
