@@ -33,7 +33,7 @@ const getMonthData = (value, data) => {
             node: (
                 <Badge
                     className='site-badge-count-109'
-                    count={count ? 109 : 0}
+                    count={count ? count : 0}
                     style={{
                         backgroundColor: "transparent",
                         marginRight: "7px",
@@ -60,7 +60,7 @@ function CalendarTable({ data }) {
                 }}
                 color='white'
             >
-                {num.node} {num.count > 1 ? "Notes was created" : "Note was created"}
+                {num.node} {num.count > 1 ? "Notes was available" : "Note was available"}
             </div>
         ) : null;
     };

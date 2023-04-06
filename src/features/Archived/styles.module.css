@@ -17,7 +17,8 @@
     height: 50px;
     display: flex;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: space-between;
+    padding:0 0px 0 40px;
 }
 .grid {
     margin: 0 !important;

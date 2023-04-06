@@ -19,9 +19,10 @@ import PinnedIcon from "./CustomIcons/PinnedIcon";
 NoteItemDel.propTypes = {
     dataItem: PropTypes.object.isRequired,
     handleInTrash: PropTypes.func.isRequired,
+    construct: PropTypes.string.isRequired,
 };
 
-function NoteItemDel({ dataItem, handleInTrash }) {
+function NoteItemDel({ dataItem, handleInTrash, construct }) {
     const [data, setData] = useState(dataItem);
 
     const handleChange = (id) => {
@@ -41,13 +42,13 @@ function NoteItemDel({ dataItem, handleInTrash }) {
     return (
         <div
             style={{
-                backgroundColor: `${convertColor(data.color)}`,
+                backgroundColor: `${convertColor(dataItem.color)}`,
                 position: "relative",
                 width: "100%",
-                maxWidth: "350px",
-                height: "220px",
+                maxWidth: `${construct==="Grid" ?"350px" :"none"}`,
+                height: `${construct==="Grid" ?"220px":"auto"}`,
                 borderRadius: "5px",
-                boxShadow: "rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;",
+                boxShadow: "rgba(0, 0, 0, 0.05) 0px 0px 0px 1px",
                 padding: "10px 15px",
             }}
         >
@@ -85,99 +86,106 @@ function NoteItemDel({ dataItem, handleInTrash }) {
                 ""
             )}
             <>
-                {data.type === "text" && (
-                    <div
-                        className='box-container'
-                        style={{
-                            width: "100%",
-                            overflow: "hidden auto",
-                            maxHeight: "130px",
-                            wordWrap: "break-word",
-                        }}
-                    >
-                        <Typography variant='body2'>{data.data}</Typography>
-                    </div>
-                )}
-                {data.type === "checklist" && (
-                    <div
-                        className='box-container'
-                        style={{ overflow: "hidden auto", maxHeight: "130px" }}
-                    >
-                        {data.data.map((item) => {
-                            const labelId = `checkbox-${data.idNode}-${item.id}`;
+                {construct === "Grid" && (
+                    <>
+                        {data.type === "text" && (
+                            <div
+                                className='box-container'
+                                style={{
+                                    width: "100%",
+                                    overflow: "hidden auto",
+                                    maxHeight: "130px",
+                                    wordWrap: "break-word",
+                                }}
+                            >
+                                <Typography sx={{color: "#00000080",fontWeight:"500",fontSize:"16px"}}>{data.data}</Typography>
+                            </div>
+                        )}
+                        {data.type === "checklist" && (
+                            <div
+                                className='box-container'
+                                style={{ overflow: "hidden auto", maxHeight: "130px" }}
+                            >
+                                {data.data.map((item) => {
+                                    const labelId = `checkbox-${data.idNode}-${item.id}`;
 
-                            return (
-                                <ListItem
-                                    
-                                    sx={{
-                                        "& .MuiButtonBase-root": {
-                                            padding: "5px 10px!important",
-                                        },
-                                        pointerEvents: "none",
-                                        borderLeft: `3px solid ${
-                                            item.status ? "#0C66E4" : "transparent"
-                                        }   !important}`,
-                                        background: `${
-                                            item.status
-                                                ? "rgba(9, 30, 66, 0.0588235) !important"
-                                                : "trasparent"
-                                        }`,
-                                    }}
-                                    key={item.id}
-                                    disablePadding
-                                >
-                                    <ListItemButton
-                                        onClick={() => {
-                                            handleChange(item.id);
-                                        }}
-                                        dense
-                                    >
-                                        <ListItemIcon>
-                                            <Checkbox
-                                                size='small'
-                                                checked={Boolean(item.status)}
-                                                tabIndex={-1}
-                                                disableRipple
-                                                inputProps={{ "aria-labelledby": labelId }}
-                                            />
-                                        </ListItemIcon>
-                                        <ListItemText
-                                            id={labelId}
-                                            sx={{ wordWrap: "break-word" }}
-                                            primary={
-                                                <span
-                                                    style={{
-                                                        textDecoration: `${
-                                                            item.status ? "line-through" : "none"
-                                                        }`,
-                                                    }}
-                                                >
-                                                    {item.content}
-                                                </span>
-                                            }
-                                        />
-                                    </ListItemButton>
-                                </ListItem>
-                            );
-                        })}
-                    </div>
+                                    return (
+                                        <ListItem
+                                            sx={{
+                                                "& .MuiButtonBase-root": {
+                                                    padding: "5px 10px!important",
+                                                },
+                                                pointerEvents: "none",
+                                                borderLeft: `3px solid ${
+                                                    item.status ? "#0C66E4" : "transparent"
+                                                }   !important}`,
+                                                background: `${
+                                                    item.status
+                                                        ? "rgba(9, 30, 66, 0.0588235) !important"
+                                                        : "trasparent"
+                                                }`,
+                                            }}
+                                            key={item.id}
+                                            disablePadding
+                                        >
+                                            <ListItemButton
+                                                onClick={() => {
+                                                    handleChange(item.id);
+                                                }}
+                                                dense
+                                            >
+                                                <ListItemIcon>
+                                                    <Checkbox
+                                                        size='small'
+                                                        checked={Boolean(item.status)}
+                                                        tabIndex={-1}
+                                                        disableRipple
+                                                        inputProps={{ "aria-labelledby": labelId }}
+                                                    />
+                                                </ListItemIcon>
+                                                <ListItemText
+                                                    id={labelId}
+                                                    sx={{ wordWrap: "break-word" }}
+                                                    primary={
+                                                        <span
+                                                            style={{
+                                                                textDecoration: `${
+                                                                    item.status
+                                                                        ? "line-through"
+                                                                        : "none"
+                                                                }`,
+                                                            }}
+                                                        >
+                                                            {item.content}
+                                                        </span>
+                                                    }
+                                                />
+                                            </ListItemButton>
+                                        </ListItem>
+                                    );
+                                })}
+                            </div>
+                        )}
+                    </>
                 )}
             </>
             <div
                 style={{
                     fontWeight: 500,
                     fontSize: "14px",
-                    background: "rgba(255, 255, 255, 0.160784)",
+                    background: `${
+                        construct === "Grid" ? "rgba(255, 255, 255, 0.160784)" : "transparent"
+                    }`,
                     borderRadius: "3px",
                     display: "inline-block",
-                    padding: "5px 8px",
-                    position: "absolute",
-                    bottom: "15px",
-
-                    marginRight:'15px'
+                    color: `${construct === "Grid" ? "black" : "rgb(79 73 73 / 80%)"}`,
+                    padding: `${construct === "Grid" ? "5px 8px" : "0"}`,
+                    position: `${construct === "Grid" ? "absolute" : "relative"}`,
+                    bottom: `${construct === "Grid" ? "15px" : "0px"}`,
+                    marginRight: "15px",
                 }}
             >
-                Create at: {dayjs(data.createAt).format("DD/MM/YYYY hh:mm A")}
+                Create at: {dayjs(dataItem.createAt).format("DD/MM/YYYY hh:mm A")}
             </div>
         </div>
     );

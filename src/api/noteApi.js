@@ -35,6 +35,10 @@ const noteApi = {
     tick(idData){
         const url = `/tick/${idData}`
         return axiosClient.patch(url)
+    },
+    openNote(idNote,data){
+        const url = `/open-note/${idNote}`
+        return axiosClient.post(url,data)
     }
 }
 export default noteApi;

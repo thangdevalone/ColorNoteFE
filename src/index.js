@@ -18,7 +18,7 @@ root.render(
     <BrowserRouter>
     <LocalizationProvider dateAdapter={AdapterDayjs}>
 
-      <SnackbarProvider autoHideDuration={2500} anchorOrigin={{ vertical: 'top', horizontal: 'right' }}>
+      <SnackbarProvider autoHideDuration={3000} anchorOrigin={{ vertical: 'top', horizontal: 'right' }}>
         <App />
       </SnackbarProvider>
       </LocalizationProvider>

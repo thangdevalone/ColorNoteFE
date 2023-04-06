@@ -4,7 +4,7 @@ import { Box } from '@mui/material';
 
 BoxDoubleContent.propTypes = {
     content_1:PropTypes.node.isRequired,
-    content_2:PropTypes.node.isRequired,
+    content_2:PropTypes.node,
     customHeight:PropTypes.string
 
 };

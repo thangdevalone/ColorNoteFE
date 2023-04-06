@@ -2,6 +2,8 @@
     width: 250px;
     height: 100vh;
     background: white;
+    position: relative;
+    z-index: 5;
 }
 .nameApp {
     font-weight: 800;

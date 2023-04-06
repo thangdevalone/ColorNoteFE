@@ -23,11 +23,14 @@ Home.propTypes = {};
 
 function Home(props) {
     const { enqueueSnackbar } = useSnackbar();
-    const user =
-        useSelector((state) => state.user.current) || JSON.parse(localStorage.getItem("user"));
+
+    const [user, setUser] = useState(
+        useSelector((state) => state.user.current) || JSON.parse(localStorage.getItem("user"))
+    );
     const [isLogin, setIsLogin] = useState(false);
     const [colorNote, setColorNote] = useState(user.df_color);
-    const [df_nav,setDf_nav]=useState(user.df_screen);
+    const [df_nav, setDf_nav] = useState(user.df_screen);
+
     const { pathname } = useLocation();
     const [drawerNew, setDrawerNew] = useState(false);
     const [type, setType] = useState("");
@@ -66,7 +69,7 @@ function Home(props) {
     const handleOpenDrawer = (param) => {
         setType(param);
         setDrawerNew(true);
-        setOptions({ ...options, dueAt:null,remindAt:null,lock:null  });
+        setOptions({ ...options, dueAt: null, remindAt: null, lock: null });
         setColorNote(user.df_color)
     };
     const handleDelNote = async (idNote, type) => {
@@ -98,11 +101,11 @@ function Home(props) {
                     ? dayjs(options.dueAt).format("DD/MM/YYYY hh:mm A Z")
                     : options.dueAt,
             remindAt:
-            typeof options.remindAt === "object" && options.remindAt
-                ? dayjs(options.remindAt).format("DD/MM/YYYY hh:mm A Z")
-                : options.remindAt,
+                typeof options.remindAt === "object" && options.remindAt
+                    ? dayjs(options.remindAt).format("DD/MM/YYYY hh:mm A Z")
+                    : options.remindAt,
         };
-        console.log(configOptions)
+        console.log(configOptions);
 
         const configParam = {
             ...value,
@@ -110,7 +113,7 @@ function Home(props) {
             pinned: pinned,
             type: type,
         };
-        
+
         try {
             setIsSubmitting(true);
             const res = await noteApi.createNote(user.id, configParam);
@@ -131,7 +134,6 @@ function Home(props) {
         setColorNote(color);
     };
     const handleOptionsNote = (param) => {
-        
         setOptions({ ...options, ...param });
     };
     const handleInTrash = async (idNote, type) => {
@@ -159,7 +161,12 @@ function Home(props) {
         newDataEdit[index] = { ...newDataEdit[index], ...newVal };
         setData(newDataEdit);
     };
-    console.log(colorNote)
+    const handleEditTrash = (id, newVal) => {
+        const index = dataTrash.findIndex((item) => item.idNote === id);
+        const newDataEdit = [...dataTrash];
+        newDataEdit[index] = { ...newDataEdit[index], ...newVal };
+        setDataTrash(newDataEdit);
+    };
     const release = localStorage.getItem("show") === "true" ? true : false;
     const view = !(pathname.split("/")[2] === "settings" || pathname.split("/")[2] === "calendar");
     return (
@@ -173,7 +180,7 @@ function Home(props) {
                             "linear-gradient(to right,#D0FADE, rgba(255, 134, 250, 0.2))",
                         overflow: "hidden",
                     }}
-                    className={'df_size'}
+                    className={"df_size"}
                 >
                     {release && <ReleaseDoc />}
                     <SideBar handleOpenDrawer={handleOpenDrawer} drawerNew={drawerNew} />
@@ -294,8 +301,11 @@ function Home(props) {
                         </Box>
                     </Drawer>
                     <Routes>
-                        <Route path='/' element={<Navigate to={`/home/${df_nav.toLowerCase()}`} />} />
-                        <Route path='/calendar' element={<CalendarTable  data={data} />} />
+                        <Route
+                            path='/'
+                            element={<Navigate to={`/home/${df_nav.toLowerCase()}`} />}
+                        />
+                        <Route path='/calendar' element={<CalendarTable data={data} />} />
                         <Route
                             path='/archived'
                             element={
@@ -308,9 +318,12 @@ function Home(props) {
                         />
                         <Route
                             path='/deleted'
-                            element={<Deleted data={dataTrash} handleInTrash={handleInTrash} />}
+                            element={<Deleted data={dataTrash} handleInTrash={handleInTrash} setTrashData={handleEditTrash} />}
                         />
-                        <Route path='/settings' element={<Settings setDf_nav={setDf_nav} />} />
+                        <Route
+                            path='/settings'
+                            element={<Settings setDf_nav={setDf_nav} setColorNote={setColorNote} setUser={setUser} />}
+                        />
                     </Routes>
                     <Footer />
                 </div>

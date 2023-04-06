@@ -11,9 +11,11 @@ import { colorBucket } from "../../constants";
 import { Update, logOut } from "../Auth/userSlice";
 import classes from "./styles.module.css";
 import userApi from "../../api/userApi";
-import PropTypes from "prop-types"
+import PropTypes from "prop-types";
 Settings.propTypes = {
-    setDf_nav:PropTypes.func.isRequired,
+    setDf_nav: PropTypes.func.isRequired,
+    setColorNote: PropTypes.func.isRequired,
+    setUser: PropTypes.func.isRequired,
 };
 
 const configColorBox = {
@@ -36,7 +38,7 @@ function diff(color, otherColor) {
     return true;
 }
 
-function Settings({setDf_nav}) {
+function Settings({ setDf_nav, setColorNote, setUser }) {
     const navigate = useNavigate();
 
     const user =
@@ -52,7 +54,6 @@ function Settings({setDf_nav}) {
     const dispatch = useDispatch();
     const handleLogOut = async () => {
         const action = logOut();
-
         await dispatch(action);
         navigate("/login");
     };
@@ -107,8 +108,9 @@ function Settings({setDf_nav}) {
         setScreen(e.target.value);
         try {
             await userApi.update({ screen: e.target.value }, user.id);
-            dispatch(Update({ screen: e.target.value }));
-            setDf_nav(e.target.value)
+            dispatch(Update({ df_screen: e.target.value }));
+            setDf_nav(e.target.value);
+            setUser({ ...user, df_screen: e.target.value });
         } catch (error) {
             console.log(error);
         }
@@ -117,8 +119,9 @@ function Settings({setDf_nav}) {
         setColor(e.target.value);
         try {
             await userApi.update({ color: colorBucket[e.target.value] }, user.id);
-            dispatch(Update({ screen: e.target.value }));
-        
+            dispatch(Update({ df_color: colorBucket[e.target.value] }));
+            setColorNote(colorBucket[e.target.value]);
+            setUser({ ...user, df_color: colorBucket[e.target.value] });
         } catch (error) {
             console.log(error);
         }
