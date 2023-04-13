@@ -12,6 +12,7 @@ import { Update, logOut } from "../Auth/userSlice";
 import classes from "./styles.module.css";
 import userApi from "../../api/userApi";
 import PropTypes from "prop-types";
+import { useSnackbar } from "notistack";
 Settings.propTypes = {
     setDf_nav: PropTypes.func.isRequired,
     setColorNote: PropTypes.func.isRequired,
@@ -40,7 +41,8 @@ function diff(color, otherColor) {
 
 function Settings({ setDf_nav, setColorNote, setUser }) {
     const navigate = useNavigate();
-
+    const {enqueueSnackbar}=useSnackbar()
+   
     const user =
         useSelector((state) => state.user.current) || JSON.parse(localStorage.getItem("user"));
     const [screen, setScreen] = useState(user.df_screen);
@@ -52,6 +54,17 @@ function Settings({ setDf_nav, setColorNote, setUser }) {
         }
     });
     const dispatch = useDispatch();
+    const handleEdit=()=>{
+        enqueueSnackbar("Sharing is currently unavailable. Try it in the next update",{variant:"warning"})
+    }
+    const handleDelAccount=async ()=>{
+        try {
+            await userApi.delete(user.id)
+            handleLogOut()
+        } catch (error) {
+            enqueueSnackbar(error.message,{variant:"error"})
+        }
+    }
     const handleLogOut = async () => {
         const action = logOut();
         await dispatch(action);
@@ -162,11 +175,13 @@ function Settings({ setDf_nav, setColorNote, setUser }) {
                         />
                         <BoxDoubleContent
                             content_1={
-                                <Button variant='contained' size='small' sx={{ marginTop: "15px" }}>
+                                <Button variant='contained' onClick={handleEdit} size='small' sx={{ marginTop: "15px" }}>
                                     Edit Profile
                                 </Button>
                             }
-                            content_2={<span></span>}
+                            content_2={<Button variant='contained' onClick={handleDelAccount} size='small' sx={{ marginTop: "15px" }}>
+                            Delete Account
+                        </Button>}
                             customHeight='30px'
                         />
                     </Box>

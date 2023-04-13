@@ -156,7 +156,7 @@ function Login(props) {
                             style={{ display: "flex", flexDirection: "column" }}
                             onSubmit={form.handleSubmit(handleSubmit)}
                         >
-                            <InputField label='User Name' name='user_name' form={form} />
+                            <InputField label='User name or gmail ' name='user_name' form={form} />
                             <PasswordField label='Password' form={form} name='password' />
                             <FormControlLabel
                                 control={<Checkbox value='remember' color='primary' />}

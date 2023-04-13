@@ -26,7 +26,7 @@ function SearchInput({ setValue }) {
                 <input
                     type='text'
                     className='searchTerm'
-                    placeholder='Type note title to find?'
+                    placeholder='Type content or title to find?'
                     onChange={handleChange}
                     value={text}
                 />

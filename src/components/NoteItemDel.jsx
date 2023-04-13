@@ -154,6 +154,8 @@ function NoteItemDel({ dataItem, handleInTrash, construct }) {
                                                                         ? "line-through"
                                                                         : "none"
                                                                 }`,
+                                                                "color": "rgba(0, 0, 0, 0.5)",
+                                                                "fontWeight": 500
                                                             }}
                                                         >
                                                             {item.content}

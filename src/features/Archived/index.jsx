@@ -22,7 +22,14 @@ function Archived({ data, handleDelNote, setArchivedData }) {
         if (value.trim() === "") {
             setDataFilter(data);
         } else {
-            const newData = data.filter((item) => item.title.includes(value));
+            const newData = data.filter((item) => {
+                if (item.type==="checklist"){
+                    for (const x of item.data){
+                        return item.title.includes(value) || x.content.includes(value)
+                    }
+                }
+                return item.title.includes(value) || item.data.includes(value)
+            });
             setDataFilter(newData || []);
         }
     }, [value]);
@@ -77,7 +84,7 @@ function Archived({ data, handleDelNote, setArchivedData }) {
                             xs={24}
                             sm={12}
                             md={4}
-                            lg={construct === "Grid" ? 3 : 4}
+                            lg={construct === "Grid" ?3 : 4}
                         >
                             {item.lock ? (
                                 <>

@@ -49,12 +49,12 @@ function NoteItemLock({ dataItem, construct,handle }) {
     const handleOkLock = async () => {
         try {
             const res =await noteApi.openNote(dataItem.idNote,{pass_lock:valueLock})
-            console.log(res)
+    
             const newVal={...res.note,lock:res.pass_lock,flag:true}
             setOpenLock(false)
             enqueueSnackbar("Note was open successfully",{variant:"success"})
             handle(newVal.idNote,newVal)
-            console.log(newVal.idNote,newVal)
+ 
         } catch (error) {
             enqueueSnackbar(error.message,{variant:"error"})
         }

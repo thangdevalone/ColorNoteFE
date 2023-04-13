@@ -18,7 +18,7 @@ import {
     ListItemText,
     Tooltip,
     styled,
-    tooltipClasses
+    tooltipClasses,
 } from "@mui/material";
 import { MobileDateTimePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
@@ -54,12 +54,11 @@ function ToolsNote(props) {
     const [valueLock, setValueLock] = useState(options.lock);
     const { enqueueSnackbar } = useSnackbar();
     const [showPassword, setShowPassword] = useState(false);
-    useEffect(()=>{
-        setDueAt(options.dueAt)
-        setRemindAt(options.remindAt)
-        setValueLock(options.lock)
-
-    },[options])
+    useEffect(() => {
+        setDueAt(options.dueAt && dayjs(options.dueAt));
+        setRemindAt(options.remindAt && dayjs(options.remindAt));
+        setValueLock(options.lock);
+    }, [options.dueAt]);
     const handleMouseDownPassword = (event) => {
         event.preventDefault();
     };
@@ -71,18 +70,16 @@ function ToolsNote(props) {
     };
     const handleOkLock = () => {
         setOpenLock(false);
-        if(valueLock.length>0){
-            handleOptionsNote({lock:valueLock})
-        }
-        else{
-            handleOptionsNote({lock:null})
+        if (valueLock.length > 0) {
+            handleOptionsNote({ lock: valueLock });
+        } else {
+            handleOptionsNote({ lock: null });
         }
     };
     const handleRemoveLock = () => {
         setOpenLock(false);
-        setValueLock("")
-        handleOptionsNote({lock:null})
-
+        setValueLock("");
+        handleOptionsNote({ lock: null });
     };
     const handleClickDate = () => {
         setPopDate(true);
@@ -155,7 +152,7 @@ function ToolsNote(props) {
                     sx={configColorBox}
                 />
             </Box>
-            <List>
+            <List sx={{ overflow: "hidden auto", height: "calc(100% - 44px)" }}>
                 <ListItem>
                     {remindAt ? (
                         <TransparentTooltip
@@ -301,13 +298,13 @@ function ToolsNote(props) {
                                 not yet provided any method to recover your password when you forget
                                 it. Thanks
                             </DialogContentText>
-                            <FormControl fullWidth sx={{marginTop:"10px"}} variant='standard'>
+                            <FormControl fullWidth sx={{ marginTop: "10px" }} variant='standard'>
                                 <InputLabel htmlFor='lock-password'>Lock by password</InputLabel>
                                 <Input
                                     id='lock-password'
                                     type={showPassword ? "text" : "password"}
-                                    value={valueLock}
-                                    onChange={(e)=>setValueLock(e.target.value)}
+                                    value={valueLock || ""}
+                                    onChange={(e) => setValueLock(e.target.value)}
                                     endAdornment={
                                         <InputAdornment position='end'>
                                             <IconButton

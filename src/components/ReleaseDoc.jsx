@@ -26,7 +26,7 @@ export default function ReleaseDoc() {
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          Welcome to the first version of Cloud Note
+          Welcome to version 1.1
         </DialogTitle>
         <DialogContent sx={{padding:"20px 35px",color:"#7e7e7e"
     }}>
@@ -36,12 +36,8 @@ export default function ReleaseDoc() {
                     <li>Choose color</li>
                     <li>Restore note</li>
                     <li>Settings</li>
-                </ul>
-                <div><b>Upcoming:</b></div>
-                <ul style={{paddingLeft:"30px"}}>
                     <li>Calendar</li>
                     <li>Sort & find note</li>
-                    <li>More than more</li>
                 </ul>
                 <b>Happy a good day! Try to my app thank you</b>
         </DialogContent>
