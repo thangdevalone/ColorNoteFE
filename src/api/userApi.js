@@ -15,9 +15,9 @@ const userApi = {
         const url='/user/'+id
         return axiosClient.patch(url,data)
     },
-    delete(id){
+    delete(id,data){
         const url='/user/'+id
-        return axiosClient.delete(url)
+        return axiosClient.post(url,data)
     }
 }
 export default userApi;

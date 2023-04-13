@@ -6,7 +6,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import noteApi from "../../api/noteApi";
-import { checkJWT, colorBucket } from "../../constants";
+import { checkJWT } from "../../constants";
 import Archived from "../../features/Archived";
 import CalendarTable from "../../features/Calendar";
 import Deleted from "../../features/Deleted";

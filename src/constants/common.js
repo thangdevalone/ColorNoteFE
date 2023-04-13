@@ -1,4 +1,4 @@
-export const STATIC_HOST="http://127.0.0.1:5000/"
+export const STATIC_HOST="http://14.225.7.179:18011/"
 
 
 

@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useState } from "react";
 import PropTypes from "prop-types";
+import React, { useEffect, useState } from "react";
 
 import "./styles.css";
 

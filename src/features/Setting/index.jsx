@@ -1,18 +1,19 @@
-import { Box, Button, Divider, FormControl, Grid, MenuItem, Select } from "@mui/material";
+import { LoginOutlined, Visibility, VisibilityOff } from "@mui/icons-material";
+import { Box, Button, Dialog, DialogActions, DialogContent, Divider, FormControl, Grid, IconButton, Input, InputAdornment, InputLabel, MenuItem, Select } from "@mui/material";
+import classNames from "classnames";
+import { useSnackbar } from "notistack";
+import PropTypes from "prop-types";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import userApi from "../../api/userApi";
 import BoxDoubleContent from "../../components/BoxDoubleContent";
 import ColorBox from "../../components/ColorBox";
-import { LoginOutlined } from "@mui/icons-material";
-import classNames from "classnames";
-import { useNavigate } from "react-router-dom";
 import CheckIcon from "../../components/CustomIcons/CheckIcon";
 import { colorBucket } from "../../constants";
 import { Update, logOut } from "../Auth/userSlice";
 import classes from "./styles.module.css";
-import userApi from "../../api/userApi";
-import PropTypes from "prop-types";
-import { useSnackbar } from "notistack";
+
 Settings.propTypes = {
     setDf_nav: PropTypes.func.isRequired,
     setColorNote: PropTypes.func.isRequired,
@@ -57,18 +58,30 @@ function Settings({ setDf_nav, setColorNote, setUser }) {
     const handleEdit=()=>{
         enqueueSnackbar("Sharing is currently unavailable. Try it in the next update",{variant:"warning"})
     }
-    const handleDelAccount=async ()=>{
-        try {
-            await userApi.delete(user.id)
-            handleLogOut()
-        } catch (error) {
-            enqueueSnackbar(error.message,{variant:"error"})
-        }
-    }
     const handleLogOut = async () => {
         const action = logOut();
         await dispatch(action);
         navigate("/login");
+    };
+    const [showPassword, setShowPassword] = useState(false);
+    const [valueLock, setValueLock] = useState("");
+    const [openLock, setOpenLock] = useState(false);
+    const handleMouseDownPassword = (event) => {
+        event.preventDefault();
+    };
+    const handleClickShowPassword = () => {
+        setShowPassword((x) => !x);
+    };
+    const handleCloseLock = () => {
+        setOpenLock(false);
+    };
+    const handleOkLock = async () => {
+        try {
+            await userApi.delete(user.id,{password:valueLock})
+            handleLogOut()
+        } catch (error) {
+            enqueueSnackbar(error.message,{variant:"error"})
+        }
     };
     const CustomMenuScreen = () => (
         <FormControl className='stand-select' variant='standard' sx={{ m: 1, minWidth: 80 }}>
@@ -154,6 +167,35 @@ function Settings({ setDf_nav, setColorNote, setUser }) {
             >
                 Log out
             </Button>
+            <Dialog open={openLock} onClose={handleCloseLock}>
+                    <DialogContent>
+                        <FormControl fullWidth sx={{ marginTop: "10px" }} variant='standard'>
+                            <InputLabel htmlFor='lock-password'>Password</InputLabel>
+                            <Input
+                                autoFocus
+                                id='lock-password'
+                                type={showPassword ? "text" : "password"}
+                                value={valueLock}
+                                onChange={(e) => setValueLock(e.target.value)}
+                                endAdornment={
+                                    <InputAdornment position='end'>
+                                        <IconButton
+                                            aria-label='toggle password visibility'
+                                            onClick={handleClickShowPassword}
+                                            onMouseDown={handleMouseDownPassword}
+                                        >
+                                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                }
+                            />
+                        </FormControl>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleCloseLock}>Cancel</Button>
+                        <Button onClick={handleOkLock}>Delete</Button>
+                    </DialogActions>
+                </Dialog>
             <Grid
                 container
                 className={classes.grid}
@@ -179,7 +221,7 @@ function Settings({ setDf_nav, setColorNote, setUser }) {
                                     Edit Profile
                                 </Button>
                             }
-                            content_2={<Button variant='contained' onClick={handleDelAccount} size='small' sx={{ marginTop: "15px" }}>
+                            content_2={<Button variant='contained' onClick={()=>{setOpenLock(true)}} size='small' sx={{ marginTop: "15px" }}>
                             Delete Account
                         </Button>}
                             customHeight='30px'
