@@ -18,6 +18,10 @@ const userApi = {
     delete(id,data){
         const url='/user/'+id
         return axiosClient.post(url,data)
+    },
+    getAll(){
+        const url='/allUsers'
+        return axiosClient.get(url)
     }
 }
 export default userApi;

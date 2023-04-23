@@ -5,9 +5,13 @@ import "./styles.css";
 
 SearchInput.propTypes = {
     setValue: PropTypes.func.isRequired,
+    placeholder:PropTypes.string
 };
+SearchInput.defaultProps={
+    placeholder:"Type content or title to find?"
+}
 
-function SearchInput({ setValue }) {
+function SearchInput({ setValue,placeholder }) {
     const [text, setText] = useState("");
 
     const handleChange = (e) => {
@@ -26,7 +30,7 @@ function SearchInput({ setValue }) {
                 <input
                     type='text'
                     className='searchTerm'
-                    placeholder='Type content or title to find?'
+                    placeholder={placeholder}
                     onChange={handleChange}
                     value={text}
                 />

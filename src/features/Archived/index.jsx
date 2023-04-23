@@ -7,6 +7,7 @@ import NoteItem from "../../components/NoteItem";
 import NoteItemLock from "../../components/NoteItemLock";
 import SearchInput from "../../components/SearchInput";
 import classes from "./styles.module.css";
+import NoteImage from "../../components/NoteImage";
 Archived.propTypes = {
     data: PropTypes.array.isRequired,
     handleDelNote: PropTypes.func.isRequired,
@@ -23,12 +24,12 @@ function Archived({ data, handleDelNote, setArchivedData }) {
             setDataFilter(data);
         } else {
             const newData = data.filter((item) => {
-                if (item.type==="checklist"){
-                    for (const x of item.data){
-                        return item.title.includes(value) || x.content.includes(value)
+                if (item.type === "checklist") {
+                    for (const x of item.data) {
+                        return item.title.includes(value) || x.content.includes(value);
                     }
                 }
-                return item.title.includes(value) || item.data.includes(value)
+                return item.title.includes(value) || item.data.includes(value);
             });
             setDataFilter(newData || []);
         }
@@ -84,17 +85,23 @@ function Archived({ data, handleDelNote, setArchivedData }) {
                             xs={24}
                             sm={12}
                             md={4}
-                            lg={construct === "Grid" ?3 : 4}
+                            lg={construct === "Grid" ? 3 : 4}
                         >
                             {item.lock ? (
                                 <>
                                     {item?.flag === true ? (
-                                        <NoteItem
-                                            construct={construct}
-                                            dataItem={item}
-                                            setArchivedData={setArchivedData}
-                                            handleDelNote={handleDelNote}
-                                        />
+                                        <>
+                                            {item.type === "image" ? (
+                                                <NoteImage construct={construct} dataItem={item} />
+                                            ) : (
+                                                <NoteItem
+                                                    construct={construct}
+                                                    dataItem={item}
+                                                    setArchivedData={setArchivedData}
+                                                    handleDelNote={handleDelNote}
+                                                />
+                                            )}
+                                        </>
                                     ) : (
                                         <NoteItemLock
                                             construct={construct}
@@ -104,12 +111,18 @@ function Archived({ data, handleDelNote, setArchivedData }) {
                                     )}
                                 </>
                             ) : (
-                                <NoteItem
-                                    construct={construct}
-                                    dataItem={item}
-                                    setArchivedData={setArchivedData}
-                                    handleDelNote={handleDelNote}
-                                />
+                                <>
+                                    {item.type === "image" ? (
+                                        <NoteImage construct={construct} dataItem={item} />
+                                    ) : (
+                                        <NoteItem
+                                            construct={construct}
+                                            dataItem={item}
+                                            setArchivedData={setArchivedData}
+                                            handleDelNote={handleDelNote}
+                                        />
+                                    )}
+                                </>
                             )}
                         </Grid>
                     ))}

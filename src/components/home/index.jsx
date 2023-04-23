@@ -1,8 +1,8 @@
-import { KeyboardArrowRight } from "@mui/icons-material";
-import { Box, Drawer, IconButton, LinearProgress } from "@mui/material";
+import { Add, Delete, KeyboardArrowRight, RemoveRedEye } from "@mui/icons-material";
+import { Box, Button, Drawer, IconButton, LinearProgress, Stack, createTheme } from "@mui/material";
 import dayjs from "dayjs";
 import { useSnackbar } from "notistack";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import noteApi from "../../api/noteApi";
@@ -18,9 +18,19 @@ import Footer from "../Footer";
 import ReleaseDoc from "../ReleaseDoc";
 import SideBar from "../SideBar";
 import ToolsNote from "../ToolsNote";
-
+import Groups from "../../features/Groups";
+import "./home.css";
+import { ThemeProvider } from "@emotion/react";
+import axios from "axios";
 Home.propTypes = {};
-
+const theme = createTheme({
+    palette: {
+        nearWhite: {
+            main: "#F0F0F0",
+            contrastText: "#fff",
+        },
+    },
+});
 function Home(props) {
     const { enqueueSnackbar } = useSnackbar();
 
@@ -47,6 +57,7 @@ function Home(props) {
         share: null,
     });
     const [pinned, setPinned] = useState(false);
+
     const toggleDrawer = () => {
         setDrawerNew(false);
     };
@@ -65,12 +76,26 @@ function Home(props) {
             })();
         }
     }, []);
+    const [files, setFiles] = useState([]);
+    const imgRef = useRef(null);
+    const fileImg = useRef(null);
 
+    useEffect(() => {
+        const im = imgRef.current;
+
+        if (im && files && files.length) {
+            im.src = URL.createObjectURL(files[0]);
+        }
+    }, [files]);
+
+    const handleUpload = () => {
+        fileImg.current.click();
+    };
     const handleOpenDrawer = (param) => {
         setType(param);
         setDrawerNew(true);
         setOptions({ ...options, dueAt: null, remindAt: null, lock: null });
-        setColorNote(user.df_color)
+        setColorNote(user.df_color);
     };
     const handleDelNote = async (idNote, type) => {
         try {
@@ -113,17 +138,39 @@ function Home(props) {
             pinned: pinned,
             type: type,
         };
-
+        
         try {
             setIsSubmitting(true);
-            const res = await noteApi.createNote(user.id, configParam);
-            setIsSubmitting(false);
+            if(type==="image"){
+                const formData = new FormData();
+                let imgbb={}
+                if (files.length !==0){
+                    formData.append('image', files[0]);
 
-            enqueueSnackbar(res.message, { variant: "success" });
-            const newData = [...data];
-            newData.push(res.note);
-            setDrawerNew(false);
-            setData(newData);
+                    imgbb = await axios.post('https://api.imgbb.com/1/upload?key=a07b4b5e0548a50248aecfb194645bac', formData)
+                }
+                const url=imgbb?.data.data.url || null
+                const res = await noteApi.createNote(user.id, {...configParam,metaData:url});
+                setIsSubmitting(false);
+                enqueueSnackbar(res.message, { variant: "success" });
+                setFiles([])
+                const newData = [...data];
+                newData.push(res.note);
+                setData(newData);
+                setDrawerNew(false);
+            }
+            else{
+                
+                const res = await noteApi.createNote(user.id, configParam);
+                setIsSubmitting(false);
+    
+                enqueueSnackbar(res.message, { variant: "success" });
+                const newData = [...data];
+                newData.push(res.note);
+                setDrawerNew(false);
+                setData(newData);
+            }
+           
         } catch (error) {
             setIsSubmitting(false);
 
@@ -168,7 +215,11 @@ function Home(props) {
         setDataTrash(newDataEdit);
     };
     const release = localStorage.getItem("show") === "true" ? true : false;
-    const view = !(pathname.split("/")[2] === "settings" || pathname.split("/")[2] === "calendar");
+    const view = !(
+        pathname.split("/")[2] === "settings" ||
+        pathname.split("/")[2] === "calendar" ||
+        pathname.split("/")[2] === "groups"
+    );
     return (
         <div>
             {isLogin && (
@@ -255,41 +306,105 @@ function Home(props) {
                             <Box
                                 className='box-container'
                                 sx={{
-                                    position: "relative",
                                     height: "calc((100% - 100px)/2)",
                                     overflow: "hidden auto",
                                     padding: "10px",
                                 }}
                             >
-                                <span
-                                    onClick={() => {
-                                        setPinned(!pinned);
-                                    }}
-                                    style={{
-                                        cursor: "pointer",
-                                        position: "absolute",
-                                        top: "10px",
-                                        left: "5px",
-                                    }}
-                                >
-                                    <PinnedIcon active={pinned} />
-                                </span>
-                                {type === "text" && (
-                                    <TextFieldBox
-                                        isSubmitting={isSubmitting}
-                                        handleNoteForm={handleNoteForm}
-                                        bg={colorNote}
-                                        action='Create'
-                                    />
+                                {type === "image" && (
+                                    <>
+                                        <Button
+                                            startIcon={<Add />}
+                                            onClick={handleUpload}
+                                            variant='outlined'
+                                        >
+                                            Upload Image
+                                            <input
+                                                style={{ display: "none" }}
+                                                id='upload-photo'
+                                                name='upload-photo'
+                                                type='file'
+                                                accept='image/*'
+                                                onChange={(e) => {
+                                                    setFiles(e.target.files);
+                                                }}
+                                                ref={fileImg}
+                                            />
+                                        </Button>
+                                        <div id='wrap-img'>
+                                            <ThemeProvider theme={theme}>
+                                                <Stack
+                                                    sx={{
+                                                        display: `${
+                                                            files.length === 0 ? "none" : "block"
+                                                        }`,
+                                                    }}
+                                                    id='img-stack'
+                                                    direction='row'
+                                                    spacing={2}
+                                                >
+                                                    <IconButton size='large' color="nearWhite" aria-label='view'>
+                                                        <RemoveRedEye />
+                                                    </IconButton>
+                                                    <IconButton size='large'  color="nearWhite" aria-label='delete'>
+                                                        <Delete />
+                                                    </IconButton>
+                                                </Stack>
+                                            </ThemeProvider>
+                                            <img
+                                                ref={imgRef}
+                                                id='img-upload'
+                                                style={{
+                                                    display: `${
+                                                        files.length === 0 ? "none" : "block"
+                                                    }`,
+                                                    width: "100%",
+                                                    margin: "5px 0px",
+                                                }}
+                                                alt='note-img'
+                                            />
+                                        </div>
+                                    </>
                                 )}
-                                {type === "checklist" && (
-                                    <CheckListBox
-                                        isSubmitting={isSubmitting}
-                                        handleNoteForm={handleNoteForm}
-                                        bg={colorNote}
-                                        action='Create'
-                                    />
-                                )}
+                                <Box sx={{ position: "relative" }}>
+                                    <span
+                                        onClick={() => {
+                                            setPinned(!pinned);
+                                        }}
+                                        style={{
+                                            cursor: "pointer",
+                                            position: "absolute",
+                                            top: "-10px",
+                                            left: "-8px",
+                                        }}
+                                    >
+                                        <PinnedIcon active={pinned} />
+                                    </span>
+                                    {type === "text" && (
+                                        <TextFieldBox
+                                            isSubmitting={isSubmitting}
+                                            handleNoteForm={handleNoteForm}
+                                            bg={colorNote}
+                                            action='Create'
+                                        />
+                                    )}
+                                    {type === "image" && (
+                                        <TextFieldBox
+                                            isSubmitting={isSubmitting}
+                                            handleNoteForm={handleNoteForm}
+                                            bg={colorNote}
+                                            action='Create'
+                                        />
+                                    )}
+                                    {type === "checklist" && (
+                                        <CheckListBox
+                                            isSubmitting={isSubmitting}
+                                            handleNoteForm={handleNoteForm}
+                                            bg={colorNote}
+                                            action='Create'
+                                        />
+                                    )}
+                                </Box>
                             </Box>
                             <Box style={{ height: "calc((100% - 50px)/2)", marginTop: "5px" }}>
                                 <ToolsNote
@@ -318,12 +433,25 @@ function Home(props) {
                         />
                         <Route
                             path='/deleted'
-                            element={<Deleted data={dataTrash} handleInTrash={handleInTrash} setTrashData={handleEditTrash} />}
+                            element={
+                                <Deleted
+                                    data={dataTrash}
+                                    handleInTrash={handleInTrash}
+                                    setTrashData={handleEditTrash}
+                                />
+                            }
                         />
                         <Route
                             path='/settings'
-                            element={<Settings setDf_nav={setDf_nav} setColorNote={setColorNote} setUser={setUser} />}
+                            element={
+                                <Settings
+                                    setDf_nav={setDf_nav}
+                                    setColorNote={setColorNote}
+                                    setUser={setUser}
+                                />
+                            }
                         />
+                        <Route path='/groups' element={<Groups />} />
                     </Routes>
                     <Footer />
                 </div>

@@ -1,10 +1,12 @@
 import {
+    AddPhotoAlternateOutlined,
     CalendarMonth,
     DeleteOutline,
     Inventory2Outlined,
     ListAltOutlined,
+    PeopleOutline,
     SettingsOutlined,
-    TextSnippetOutlined
+    TextSnippetOutlined,
 } from "@mui/icons-material";
 import { Button, Menu, MenuItem } from "@mui/material";
 import Box from "@mui/material/Box";
@@ -15,16 +17,14 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import PropTypes from "prop-types";
 import React from "react";
-import classes from "./styles.module.css"
+import classes from "./styles.module.css";
 import { useLocation, useNavigate } from "react-router-dom";
 SideBar.propTypes = {
     handleOpenDrawer: PropTypes.func.isRequired,
     drawerNew: PropTypes.bool.isRequired,
-}
-    
+};
 
 function SideBar({ handleOpenDrawer, drawerNew }) {
-   
     const { pathname } = useLocation();
     const navigate = useNavigate();
     const [anchorEl, setAnchorEl] = React.useState(null);
@@ -39,6 +39,10 @@ function SideBar({ handleOpenDrawer, drawerNew }) {
     const handleText = () => {
         handleClose();
         handleOpenDrawer("text");
+    };
+    const handleImage= () => {
+        handleClose();
+        handleOpenDrawer("image");
     };
     const handleClose = () => {
         setAnchorEl(null);
@@ -65,6 +69,11 @@ function SideBar({ handleOpenDrawer, drawerNew }) {
                 color: "#44546F",
             }}
         />,
+        <PeopleOutline
+            style={{
+                color: "#44546F",
+            }}
+        />,
     ];
     const handleNav = (nav) => {
         if (pathname.split("/")[2] === nav) return;
@@ -73,7 +82,7 @@ function SideBar({ handleOpenDrawer, drawerNew }) {
     return (
         <div className={classes.sidebar}>
             <h3 className={classes.nameApp}>CLOUD NOTE</h3>
-            <div className="btn-new">
+            <div className='btn-new'>
                 <Button
                     variant='contained'
                     onClick={handleClick}
@@ -126,12 +135,18 @@ function SideBar({ handleOpenDrawer, drawerNew }) {
                         </ListItemIcon>
                         Check list
                     </MenuItem>
+                    <MenuItem onClick={handleImage}>
+                        <ListItemIcon>
+                            <AddPhotoAlternateOutlined fontSize='small' />
+                        </ListItemIcon>
+                        Image
+                    </MenuItem>
                 </Menu>
             </div>
 
             <Box className='nav' sx={{ marginTop: 4 }}>
                 <List>
-                    {["Calendar", "Archived", "Deleted", "Settings"].map((text, index) => (
+                    {["Calendar", "Archived", "Deleted", "Settings", "Groups"].map((text, index) => (
                         <ListItem
                             key={text}
                             sx={{ color: "#44546F" }}

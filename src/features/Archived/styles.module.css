@@ -10,6 +10,7 @@
     width: 100%;
     padding: 0 20px;
     height: calc(100% - 50px);
+    padding-bottom: 20px;
     overflow: hidden auto;
 }
 .headerFeature{

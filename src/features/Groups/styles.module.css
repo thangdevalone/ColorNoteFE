@@ -11,18 +11,8 @@
     padding: 0 20px;
     height: calc(100% - 50px);
     overflow: hidden auto;
-    padding-bottom: 20px;
-
 }
-.headerFeature {
-    width: 100%;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding:0 0px 0 40px;
-}
-.grid {
+.grid{
     margin: 0 !important;
     width: 100% !important;
 }

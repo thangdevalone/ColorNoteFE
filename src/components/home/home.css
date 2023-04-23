@@ -1,0 +1,23 @@
+#wrap-img{
+    position: relative;
+}
+#wrap-img:hover #img-upload{
+    filter: brightness(40%) blur(1px);
+}
+#wrap-img:hover #img-stack{
+    display: flex;
+}
+#wrap-img #img-stack{
+    position: absolute;
+    display: none;
+    z-index: 15;
+    top:50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    transition: all 0.3s;
+
+}
+#img-stack{
+    transition: all 0.3s;
+
+}

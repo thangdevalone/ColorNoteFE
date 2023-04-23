@@ -8,6 +8,7 @@ import NoteItemDel from "../../components/NoteItemDel";
 import classes from "./styles.module.css";
 import { FormatListBulleted, GridViewOutlined } from "@mui/icons-material";
 import NoteItemLock from "../../components/NoteItemLock";
+import NoteImage from "../../components/NoteImage";
 Deleted.propTypes = {};
 Deleted.defaultProps = {
     handleInTrash: PropTypes.func.isRequired,
@@ -20,17 +21,16 @@ function Deleted({ handleInTrash, data, setTrashData }) {
     const [dataFilter, setDataFilter] = useState([]);
     const [construct, setConstruct] = useState("Grid");
     useEffect(() => {
-    
         if (value.trim() === "") {
             setDataFilter(data);
         } else {
             const newData = data.filter((item) => {
-                if (item.type==="checklist"){
-                    for (const x of item.data){
-                        return item.title.includes(value) || x.content.includes(value)
+                if (item.type === "checklist") {
+                    for (const x of item.data) {
+                        return item.title.includes(value) || x.content.includes(value);
                     }
                 }
-                return item.title.includes(value) || item.data.includes(value)
+                return item.title.includes(value) || item.data.includes(value);
             });
             setDataFilter(newData || []);
         }
@@ -92,11 +92,17 @@ function Deleted({ handleInTrash, data, setTrashData }) {
                             {item.lock ? (
                                 <>
                                     {item?.flag === true ? (
-                                        <NoteItemDel
-                                            construct={construct}
-                                            dataItem={item}
-                                            handleInTrash={handleInTrash}
-                                        />
+                                        <>
+                                            {item.type === "image" ? (
+                                                <NoteImage construct={construct} dataItem={item} />
+                                            ) : (
+                                                <NoteItemDel
+                                                    construct={construct}
+                                                    dataItem={item}
+                                                    handleInTrash={handleInTrash}
+                                                />
+                                            )}
+                                        </>
                                     ) : (
                                         <NoteItemLock
                                             construct={construct}
@@ -106,11 +112,17 @@ function Deleted({ handleInTrash, data, setTrashData }) {
                                     )}
                                 </>
                             ) : (
-                                <NoteItemDel
-                                    construct={construct}
-                                    dataItem={item}
-                                    handleInTrash={handleInTrash}
-                                />
+                                <>
+                                    {item.type === "image" ? (
+                                        <NoteImage construct={construct} dataItem={item} />
+                                    ) : (
+                                        <NoteItemDel
+                                            construct={construct}
+                                            dataItem={item}
+                                            handleInTrash={handleInTrash}
+                                        />
+                                    )}
+                                </>
                             )}
                         </Grid>
                     ))}
