@@ -56,16 +56,21 @@ function Settings({ setDf_nav, setColorNote, setUser }) {
     });
     const dispatch = useDispatch();
     const handleEdit=()=>{
-        enqueueSnackbar("Sharing is currently unavailable. Try it in the next update",{variant:"warning"})
+        enqueueSnackbar("Editing is currently unavailable. Try it in the next update",{variant:"warning"})
     }
     const handleLogOut = async () => {
         const action = logOut();
         await dispatch(action);
-        navigate("/login");
+        setTimeout(() => {
+            navigate("/login");
+        }, 500);
     };
     const [showPassword, setShowPassword] = useState(false);
     const [valueLock, setValueLock] = useState("");
     const [openLock, setOpenLock] = useState(false);
+    const [showPassword2, setShowPassword2] = useState(false);
+    const [valueLock2, setValueLock2] = useState("");
+    const [openLock2, setOpenLock2] = useState(false);
     const handleMouseDownPassword = (event) => {
         event.preventDefault();
     };
@@ -74,6 +79,33 @@ function Settings({ setDf_nav, setColorNote, setUser }) {
     };
     const handleCloseLock = () => {
         setOpenLock(false);
+    };
+    const handleMouseDownPassword2 = (event) => {
+        event.preventDefault();
+    };
+    const handleClickShowPassword2 = () => {
+        setShowPassword2((x) => !x);
+    };
+    const handleCloseLock2 = () => {
+        setOpenLock2(false);
+    };
+    const handleCreateP2=()=>{
+        setOpenLock2(true)        
+    }
+    const handleEditP2=()=>{
+        return;
+    }
+    const handleOkLock2 =  async () => {
+        try {
+            const res=await userApi.lock2(user.id,{password_2:valueLock2})
+            enqueueSnackbar("Create password 2 successfully",{variant:"success"})
+            dispatch(Update({ password_2:  res.password_2}));
+            setUser({ ...user,  password_2:  res.password_2 });
+            setOpenLock2(false)
+
+        } catch (error) {
+            enqueueSnackbar(error.message,{variant:"error"})
+        }
     };
     const handleOkLock = async () => {
         try {
@@ -196,6 +228,35 @@ function Settings({ setDf_nav, setColorNote, setUser }) {
                         <Button onClick={handleOkLock}>Delete</Button>
                     </DialogActions>
                 </Dialog>
+                <Dialog open={openLock2} onClose={handleCloseLock2}>
+                    <DialogContent>
+                        <FormControl fullWidth sx={{ marginTop: "10px" }} variant='standard'>
+                            <InputLabel htmlFor='lock-password'>Password 2</InputLabel>
+                            <Input
+                                autoFocus
+                                id='lock-password'
+                                type={showPassword2? "text" : "password"}
+                                value={valueLock2}
+                                onChange={(e) => setValueLock2(e.target.value)}
+                                endAdornment={
+                                    <InputAdornment position='end'>
+                                        <IconButton
+                                            aria-label='toggle password visibility'
+                                            onClick={handleClickShowPassword2}
+                                            onMouseDown={handleMouseDownPassword2}
+                                        >
+                                            {showPassword2 ? <VisibilityOff /> : <Visibility />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                }
+                            />
+                        </FormControl>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleCloseLock2}>Cancel</Button>
+                        <Button onClick={handleOkLock2}>Save</Button>
+                    </DialogActions>
+                </Dialog>
             <Grid
                 container
                 className={classes.grid}
@@ -213,6 +274,11 @@ function Settings({ setDf_nav, setColorNote, setUser }) {
                         <BoxDoubleContent
                             content_1={<span style={{ fontWeight: 600 }}>Gmail:</span>}
                             content_2={user.gmail}
+                            customHeight='30px'
+                        />
+                        <BoxDoubleContent
+                            content_1={<span style={{ fontWeight: 600 }}>Password 2:</span>}
+                            content_2={user?.password_2 ?<div>****** <Button onClick={handleEditP2}>Edit</Button></div>:<><Button onClick={handleCreateP2}>Create</Button></>}
                             customHeight='30px'
                         />
                         <BoxDoubleContent

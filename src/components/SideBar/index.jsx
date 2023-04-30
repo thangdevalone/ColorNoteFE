@@ -5,10 +5,25 @@ import {
     Inventory2Outlined,
     ListAltOutlined,
     PeopleOutline,
+    Screenshot,
     SettingsOutlined,
     TextSnippetOutlined,
+    Visibility,
+    VisibilityOff,
 } from "@mui/icons-material";
-import { Button, Menu, MenuItem } from "@mui/material";
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    FormControl,
+    IconButton,
+    Input,
+    InputAdornment,
+    InputLabel,
+    Menu,
+    MenuItem,
+} from "@mui/material";
 import Box from "@mui/material/Box";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
@@ -16,9 +31,12 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import PropTypes from "prop-types";
-import React from "react";
+import React, { useState } from "react";
 import classes from "./styles.module.css";
 import { useLocation, useNavigate } from "react-router-dom";
+import userApi from "../../api/userApi";
+import { useSnackbar } from "notistack";
+import { useSelector } from "react-redux";
 SideBar.propTypes = {
     handleOpenDrawer: PropTypes.func.isRequired,
     drawerNew: PropTypes.bool.isRequired,
@@ -40,14 +58,38 @@ function SideBar({ handleOpenDrawer, drawerNew }) {
         handleClose();
         handleOpenDrawer("text");
     };
-    const handleImage= () => {
+    const handleImage = () => {
         handleClose();
         handleOpenDrawer("image");
     };
     const handleClose = () => {
         setAnchorEl(null);
     };
+    const user =useSelector((state) => state.user.current) || JSON.parse(localStorage.getItem("user"));
+    const [showPassword2, setShowPassword2] = useState(false);
+    const [valueLock2, setValueLock2] = useState("");
+    const {enqueueSnackbar}=useSnackbar()
 
+    const [openLock2, setOpenLock2] = useState(false);
+    const handleMouseDownPassword2 = (event) => {
+        event.preventDefault();
+    };
+    const handleClickShowPassword2 = () => {
+        setShowPassword2((x) => !x);
+    };
+    const handleCloseLock2 = () => {
+        setOpenLock2(false);
+    };
+    const handleOkLock2 = async () => {
+        try {
+            await userApi.open2(user.id,{password_2:valueLock2})
+            navigate("/home/screenshot")
+            setOpenLock2(false)
+        } catch (error) {
+            enqueueSnackbar("Password 2 not true",{variant:"error"})
+        }
+
+    };
     const icons = [
         <CalendarMonth
             style={{
@@ -59,11 +101,17 @@ function SideBar({ handleOpenDrawer, drawerNew }) {
                 color: "#44546F",
             }}
         />,
+        <Screenshot
+            style={{
+                color: "#44546F",
+            }}
+        />,
         <DeleteOutline
             style={{
                 color: "#44546F",
             }}
         />,
+
         <SettingsOutlined
             style={{
                 color: "#44546F",
@@ -81,6 +129,35 @@ function SideBar({ handleOpenDrawer, drawerNew }) {
     };
     return (
         <div className={classes.sidebar}>
+            <Dialog open={openLock2} onClose={handleCloseLock2}>
+                <DialogContent>
+                    <FormControl fullWidth sx={{ marginTop: "10px" }} variant='standard'>
+                        <InputLabel htmlFor='lock-password'>Password 2</InputLabel>
+                        <Input
+                            autoFocus
+                            id='lock-password'
+                            type={showPassword2 ? "text" : "password"}
+                            value={valueLock2}
+                            onChange={(e) => setValueLock2(e.target.value)}
+                            endAdornment={
+                                <InputAdornment position='end'>
+                                    <IconButton
+                                        aria-label='toggle password visibility'
+                                        onClick={handleClickShowPassword2}
+                                        onMouseDown={handleMouseDownPassword2}
+                                    >
+                                        {showPassword2 ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            }
+                        />
+                    </FormControl>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseLock2}>Cancel</Button>
+                    <Button onClick={handleOkLock2}>Open</Button>
+                </DialogActions>
+            </Dialog>
             <h3 className={classes.nameApp}>CLOUD NOTE</h3>
             <div className='btn-new'>
                 <Button
@@ -146,25 +223,34 @@ function SideBar({ handleOpenDrawer, drawerNew }) {
 
             <Box className='nav' sx={{ marginTop: 4 }}>
                 <List>
-                    {["Calendar", "Archived", "Deleted", "Settings", "Groups"].map((text, index) => (
-                        <ListItem
-                            key={text}
-                            sx={{ color: "#44546F" }}
-                            disablePadding
-                            onClick={() => handleNav(text.toLowerCase())}
-                        >
-                            <ListItemButton
-                                selected={
-                                    pathname.split("/")[2] === text.toLowerCase() ? true : false
-                                }
+                    {["Calendar", "Archived", "Screenshot", "Deleted", "Settings", "Groups"].map(
+                        (text, index) => (
+                            <ListItem
+                                key={text}
+                                sx={{ color: "#44546F" }}
+                                disablePadding
+                                onClick={() => {
+                                    if (text.toLowerCase() === "screenshot") {
+                                        setOpenLock2(true);
+                                    }
+                                    else{
+                                    handleNav(text.toLowerCase());
+                                    }
+                                }}
                             >
-                                <ListItemIcon>{icons[index]}</ListItemIcon>
-                                <ListItemText
-                                    primary={<span style={{ fontWeight: 500 }}>{text}</span>}
-                                />
-                            </ListItemButton>
-                        </ListItem>
-                    ))}
+                                <ListItemButton
+                                    selected={
+                                        pathname.split("/")[2] === text.toLowerCase() ? true : false
+                                    }
+                                >
+                                    <ListItemIcon>{icons[index]}</ListItemIcon>
+                                    <ListItemText
+                                        primary={<span style={{ fontWeight: 500 }}>{text}</span>}
+                                    />
+                                </ListItemButton>
+                            </ListItem>
+                        )
+                    )}
                 </List>
             </Box>
             <Box

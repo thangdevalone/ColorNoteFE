@@ -3,7 +3,7 @@ import { Box, Button, Drawer, IconButton, LinearProgress, Stack, createTheme } f
 import dayjs from "dayjs";
 import { useSnackbar } from "notistack";
 import React, { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Navigate, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import noteApi from "../../api/noteApi";
 import { checkJWT } from "../../constants";
@@ -22,6 +22,9 @@ import Groups from "../../features/Groups";
 import "./home.css";
 import { ThemeProvider } from "@emotion/react";
 import axios from "axios";
+import { refresh } from "../../features/Auth/userSlice";
+import { useJwt } from "react-jwt";
+import Screenshot from "../../features/Screenshot";
 Home.propTypes = {};
 const theme = createTheme({
     palette: {
@@ -31,6 +34,7 @@ const theme = createTheme({
         },
     },
 });
+
 function Home(props) {
     const { enqueueSnackbar } = useSnackbar();
 
@@ -57,7 +61,21 @@ function Home(props) {
         share: null,
     });
     const [pinned, setPinned] = useState(false);
+    const { refreshToken } = useJwt({ token: user?.jwt || JSON.parse(localStorage.getItem('access_token')) });
+    // Tự động refresh token sau 30 phút
+    const dispatch=useDispatch()
+    useEffect(() => {
+        const intervalId = setInterval(async () => {
+            const token= await dispatch(refresh())
+            console.log(token)
+            if (token) {
+                // Nếu nhận được token mới, cập nhật lại giá trị trong state hoặc local storage
+                localStorage.setItem('access_token', JSON.stringify(token));
+              }
+        }, 30 * 60 * 1000);
 
+        return () => clearInterval(intervalId);
+    }, [dispatch, refreshToken]);
     const toggleDrawer = () => {
         setDrawerNew(false);
     };
@@ -425,6 +443,16 @@ function Home(props) {
                             path='/archived'
                             element={
                                 <Archived
+                                    data={data}
+                                    setArchivedData={handleEdit}
+                                    handleDelNote={handleDelNote}
+                                />
+                            }
+                        />
+                        <Route
+                            path='/screenshot'
+                            element={
+                                <Screenshot
                                     data={data}
                                     setArchivedData={handleEdit}
                                     handleDelNote={handleDelNote}

@@ -22,6 +22,7 @@ import useImageLoaded from "../customHook/ImageLoaded";
 NoteImage.propTypes = {
     dataItem: PropTypes.object.isRequired,
     construct: PropTypes.string.isRequired,
+    handleDelNote: PropTypes.func.isRequired,
 };
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     "& .MuiDialogContent-root": {
@@ -60,7 +61,7 @@ BootstrapDialogTitle.propTypes = {
     onClose: PropTypes.func.isRequired,
 };
 
-function NoteImage({ dataItem, construct }) {
+function NoteImage({ dataItem, construct ,handleDelNote}) {
     const [open, setOpen] = useState(false);
     const [ref, loaded, onLoad] = useImageLoaded()
   
@@ -72,9 +73,10 @@ function NoteImage({ dataItem, construct }) {
     const handleClose = () => {
         setOpen(false);
     };
-    const handleDel=(e)=>{
+    const handleDel=async (e)=>{
         e.stopPropagation()
-        console.log("del")
+        handleDelNote(dataItem.idNote, "trunc");
+        
     }
     return (
         <Box>

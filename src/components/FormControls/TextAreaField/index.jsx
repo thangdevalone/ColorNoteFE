@@ -22,7 +22,7 @@ function TextAreaField(props) {
                 control={form.control}
                 id={name}
                 render={({ field: { onChange } }) => (
-                    <OutlinedInput multiline maxRows={3} name={name} onChange={onChange} type='text' label={label} />
+                    <OutlinedInput multiline spellCheck={false} maxRows={3} name={name} onChange={onChange} type='text' label={label} />
                 )}
             />
             <FormHelperText>

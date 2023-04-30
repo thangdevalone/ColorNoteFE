@@ -9,6 +9,7 @@ import {
     DialogContentText,
     DialogTitle,
     Grid,
+    LinearProgress,
     TextField,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
@@ -21,14 +22,20 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import TextAreaField from "../../components/FormControls/TextAreaField";
 import userApi from "../../api/userApi";
+import { useSelector } from "react-redux";
+import groupApi from "../../api/groupApi";
+import { useSnackbar } from "notistack";
 Groups.propTypes = {};
 
 function Groups(props) {
     const [value, setValue] = useState("");
+    const user=useSelector((state)=>state.user.current)
     const [dataFilter, setDataFilter] = useState([]);
     const [allUser,SetAllUser]=useState([])
     const [open, setOpen] = useState(false);
-    const [members,setMember]=useState([])
+    const [members,setMembers]=useState([]);
+    const {enqueueSnackbar}=useSnackbar();
+    const [isSubmitting,setIsSubmitting]=useState(false)
     useEffect(()=>{
         (async ()=>{
             try {
@@ -48,6 +55,9 @@ function Groups(props) {
     const handleCloseCreateGroup = () => {
         setOpen(false);
     };
+    const handleAddMember=(e,val)=>{
+        setMembers(val)
+    }
     const schema = yup
         .object()
         .shape({
@@ -62,8 +72,16 @@ function Groups(props) {
         },
         resolver: yupResolver(schema),
     });
-    const handleSubmit = (values) => {
-        console.log(values);
+    const handleSubmit = async (values) => {
+        const data={...values,members:[...members,{id:user.id,gmail:user.gmail,role:"Owner"}]}
+        try {
+            setIsSubmitting(true)
+            await groupApi.createGroup(data)
+            setIsSubmitting(false)
+        } catch (error) {
+            setIsSubmitting(false)
+            enqueueSnackbar(error.message,{variant:"error"})
+        }
     };
     return (
         <div className={classes.root}>
@@ -81,6 +99,7 @@ function Groups(props) {
                     New Group
                 </Button>
                 <Dialog open={open} onClose={handleCloseCreateGroup}>
+                    {isSubmitting && <LinearProgress className='pg-load' />}
                     <form onSubmit={form.handleSubmit(handleSubmit)}>
                         <DialogTitle>Create new group</DialogTitle>
                         <DialogContent>
@@ -95,13 +114,13 @@ function Groups(props) {
                                 form={form}
                             />
                             <Autocomplete
-                                
+                                noOptionsText="Gmail was not found"
                                 multiple
-                                limitTags={2}
+                                limitTags={-1}
                                 id='multiple-limit-tags'
                                 options={allUser}
                                 getOptionLabel={(option) => option.gmail}
-                                onChange={(e,value)=>{console.log(value)}}
+                                onChange={handleAddMember}
                                 renderInput={(params) => (
                                     <TextField
                                         {...params}
@@ -110,12 +129,14 @@ function Groups(props) {
                                         placeholder='Gmail'
                                     />
                                 )}
+                                isOptionEqualToValue={(option, value) => option.gmail === value.gmail}
                                 fullWidth
+                                
                             />
                         </DialogContent>
                         <DialogActions>
                             <Button onClick={handleCloseCreateGroup}>Cancel</Button>
-                            <Button type='submit'>Create</Button>
+                            <Button disabled={isSubmitting} type='submit'>Create</Button>
                         </DialogActions>
                     </form>
                 </Dialog>

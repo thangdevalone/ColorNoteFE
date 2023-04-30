@@ -11,6 +11,9 @@ const userApi = {
         const url='/login'
         return axiosClient.post(url,data)
     },
+    refreshToken() {
+        return axiosClient.post('/refesh-token')
+    },
     update(data,id){
         const url='/user/'+id
         return axiosClient.patch(url,data)
@@ -22,6 +25,15 @@ const userApi = {
     getAll(){
         const url='/allUsers'
         return axiosClient.get(url)
+    },
+    lock2(id,data){
+        const url='/create-pass-2/'+id
+        return axiosClient.post(url,data)
+    },
+    open2(id,data){
+        const url='/open-pass-2/'+id
+        return axiosClient.post(url,data)
     }
 }
+
 export default userApi;

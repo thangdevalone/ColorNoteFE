@@ -4,21 +4,21 @@ import classNames from "classnames";
 import PropTypes from "prop-types";
 import React, { useEffect, useState } from "react";
 import NoteImage from "../../components/NoteImage";
-import NoteItem from "../../components/NoteItem";
-import NoteItemLock from "../../components/NoteItemLock";
 import SearchInput from "../../components/SearchInput";
 import classes from "./styles.module.css";
-Archived.propTypes = {
+Screenshot.propTypes = {
     data: PropTypes.array.isRequired,
     handleDelNote: PropTypes.func.isRequired,
     setArchivedData: PropTypes.func.isRequired,
 };
-Archived.defaultProps = {};
+Screenshot.defaultProps = {};
 
-function Archived({ data, handleDelNote, setArchivedData }) {
+function Screenshot({ data, handleDelNote, setArchivedData }) {
     const [value, setValue] = useState("");
+    
     const [dataFilter, setDataFilter] = useState([]);
     const [construct, setConstruct] = useState("Grid");
+    
     useEffect(() => {
         if (value.trim() === "") {
             setDataFilter(data);
@@ -41,6 +41,7 @@ function Archived({ data, handleDelNote, setArchivedData }) {
     return (
         <div className={classes.root}>
             <div className={classes.headerFeature}>
+            
                 <Box className='feature'>
                     <Button
                         variant='outlined'
@@ -81,7 +82,7 @@ function Archived({ data, handleDelNote, setArchivedData }) {
                 >
                     {dataFilter.map((item) => (
                         <>
-                            {item.type !== "screenshot" && (
+                            {item.type === "screenshot" && (
                                 <Grid
                                     key={item.idNote}
                                     item
@@ -90,46 +91,7 @@ function Archived({ data, handleDelNote, setArchivedData }) {
                                     md={4}
                                     lg={construct === "Grid" ? 3 : 4}
                                 >
-                                    {item.lock ? (
-                                        <>
-                                            {item?.flag === true ? (
-                                                <>
-                                                    {item.type === "image" ? (
-                                                        <NoteImage
-                                                            construct={construct}
-                                                            dataItem={item}
-                                                        />
-                                                    ) : (
-                                                        <NoteItem
-                                                            construct={construct}
-                                                            dataItem={item}
-                                                            setArchivedData={setArchivedData}
-                                                            handleDelNote={handleDelNote}
-                                                        />
-                                                    )}
-                                                </>
-                                            ) : (
-                                                <NoteItemLock
-                                                    construct={construct}
-                                                    handle={setArchivedData}
-                                                    dataItem={item}
-                                                />
-                                            )}
-                                        </>
-                                    ) : (
-                                        <>
-                                            {item.type === "image" ? (
-                                                <NoteImage construct={construct} dataItem={item} />
-                                            ) : (
-                                                <NoteItem
-                                                    construct={construct}
-                                                    dataItem={item}
-                                                    setArchivedData={setArchivedData}
-                                                    handleDelNote={handleDelNote}
-                                                />
-                                            )}
-                                        </>
-                                    )}
+                                    <NoteImage handleDelNote={handleDelNote} construct={construct} dataItem={item} />
                                 </Grid>
                             )}
                         </>
@@ -140,4 +102,4 @@ function Archived({ data, handleDelNote, setArchivedData }) {
     );
 }
 
-export default Archived;
+export default Screenshot;
